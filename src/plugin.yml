@@ -1,0 +1,11 @@
+main: me.mattyhd0.koth.KoTHPlugin
+name: KoTH
+version: 1.1.1
+description: 'The free solution for servers with King of the Hill'
+author: MattyHD0
+softdepend: [ PlaceholderAPI ]
+load: POSTWORLD
+commands:
+  koth:
+    description: Koth main command
+    usage: /<command>

@@ -1,0 +1,43 @@
+update-checker: true
+
+#The time in seconds it takes for a koth to finish once started
+koth-duration: 900
+
+koth-in-progress:
+  #Every few seconds there will be a broadcast of who is dominating the hill
+  broadcast-every: 60
+
+  #What will return the placeholder {king} of the scoreboard when no one is dominating the hill
+  king-null-placeholder: 'None'
+
+koth-finish:
+  #Fireworks effect that will be launched when the koth ends and there is a winner
+  winner-fireworks: true
+
+#Wand configuration you can get with /koth givewand
+selection-wand:
+  type: STICK
+  name: '&c&lKoTH Selection Wand'
+  lore:
+    - '&7Left-Click to select position 1'
+    - '&7Right-Click to select position 2'
+
+#Configuration of the scoreboard that will be shown when there is a koth in progress
+scoreboard:
+  enable: true
+  title: '&c&lKoTH'
+  body:
+    - ''
+    - '&7Koth:'
+    - '&c{koth_name}'
+    - ''
+    - '&7King:'
+    - '&C{king}'
+    - ''
+    - '&7Coords:'
+    - '&c{x} {y} {z}'
+    - ''
+    - '&7Time Left:'
+    - '&c{time_left}'
+    - ''
+    - '&cplay.myserver.com'
