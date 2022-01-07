@@ -82,7 +82,7 @@ public class KothCommand implements CommandExecutor {
             );
             Config.loadConfiguration();
             RewardManager.loadAllRewards();
-            KothManager.loadAllKoths();
+            KothManager.loadAllKoths(true);
             KothSelectionWand.setupWand();
 
         } else {
@@ -148,7 +148,7 @@ public class KothCommand implements CommandExecutor {
                                             .setPos2(pos2)
                             );
 
-                            KothManager.loadAllKoths();
+                            KothManager.loadAllKoths(false);
 
                             sender.sendMessage(
                                     Config.getMessage("commands.koth.create.koth-created")

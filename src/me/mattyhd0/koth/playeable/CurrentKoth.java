@@ -1,6 +1,6 @@
 package me.mattyhd0.koth.playeable;
 
-import me.mattyhd0.koth.scoreboard.ScoreboardManager;
+import me.mattyhd0.katylib.scoreboard.ScoreboardManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.manager.koth.KothManager;
@@ -27,6 +27,13 @@ public class CurrentKoth {
 
         this.id = kothId;
         this.timeLeft = timeLeft;
+
+    }
+
+    public CurrentKoth(String kothId){
+
+        this.id = kothId;
+        this.timeLeft = Config.getConfig().getInt("koth-duration");
 
     }
 

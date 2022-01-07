@@ -1,6 +1,7 @@
 package me.mattyhd0.koth.scoreboard;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.mattyhd0.katylib.scoreboard.ScoreboardManager;
 import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.creator.Koth;
@@ -10,79 +11,65 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class ScoreboardTask {
+public class ScoreboardTask  extends BukkitRunnable{
 
-    public static void initTask(Plugin plugin){
+    boolean papiSupport = KoTHPlugin.hasSupport("PlaceholderAPI");
 
-        new BukkitRunnable(){
+    @Override
+    public void run() {
 
-            boolean papiSupport = KoTHPlugin.hasSupport("PlaceholderAPI");
+        if(CurrentKoth.getCurrectKoth() != null) {
 
-            @Override
-            public void run() {
+            FileConfiguration config = Config.getConfig();
 
-                if(CurrentKoth.getCurrectKoth() != null) {
+            if(config.getBoolean("scoreboard.enable")){
 
-                    FileConfiguration config = Config.getConfig();
+                for (Player player : Bukkit.getOnlinePlayers()) {
 
-                    if(config.getBoolean("scoreboard.enable")){
+                    Koth koth = CurrentKoth.getCurrectKoth().getKoth();
+                    Location kothLoc = koth.getCenterLocation();
 
-                        for (Player player : Bukkit.getOnlinePlayers()) {
+                    ScoreboardManager manager = ScoreboardManager.getByPlayer(player);
+                    if(manager == null){
+                        manager = ScoreboardManager.createScore(player);
+                    }
 
-                            Koth koth = CurrentKoth.getCurrectKoth().getKoth();
-                            Location kothLoc = koth.getCenterLocation();
+                    String title = config.getString("scoreboard.title");
+                    if(papiSupport) title = PlaceholderAPI.setPlaceholders(player, title);
+                    manager.setTitle(title);
+                    int index = 14;
 
-                            ScoreboardManager manager = ScoreboardManager.getByPlayer(player);
-                            if(manager == null){
-                                manager = ScoreboardManager.createScore(player);
-                            }
+                    for(String line: config.getStringList("scoreboard.body")){
 
-                            String title = config.getString("scoreboard.title");
-                                if(papiSupport) title = PlaceholderAPI.setPlaceholders(player, title);
-                            manager.setTitle(title);
-                            int index = 14;
+                        line = line.replaceAll("\\{world}", kothLoc.getWorld().getName())
+                                .replaceAll("\\{x}", (int)kothLoc.getX()+"")
+                                .replaceAll("\\{y}", (int)kothLoc.getY()+"")
+                                .replaceAll("\\{z}", (int)kothLoc.getZ()+"")
+                                .replaceAll("\\{koth_name}", koth.getDisplayName())
+                                .replaceAll("\\{time_left}", CurrentKoth.getCurrectKoth().getFormattedTimeLeft())
+                        ;
 
-                            for(String line: config.getStringList("scoreboard.body")){
-
-                                line = line.replaceAll("\\{world}", kothLoc.getWorld().getName())
-                                        .replaceAll("\\{x}", (int)kothLoc.getX()+"")
-                                        .replaceAll("\\{y}", (int)kothLoc.getY()+"")
-                                        .replaceAll("\\{z}", (int)kothLoc.getZ()+"")
-                                        .replaceAll("\\{koth_name}", koth.getDisplayName())
-                                        .replaceAll("\\{time_left}", CurrentKoth.getCurrectKoth().getFormattedTimeLeft())
-                                ;
-
-                                Player king = CurrentKoth.getCurrectKoth().getKing();
-                                if(king != null) {
-                                    line = line.replaceAll("\\{king}", king.getName());
-                                } else {
-                                    line = line.replaceAll("\\{king}", Util.color(Config.getConfig().getString("koth-in-progress.king-null-placeholder")));
-                                }
-
-                                if(papiSupport) line = PlaceholderAPI.setPlaceholders(player, line);
-
-                                manager.setSlot(index, line);
-                                index--;
-                            }
-
-
+                        Player king = CurrentKoth.getCurrectKoth().getKing();
+                        if(king != null) {
+                            line = line.replaceAll("\\{king}", king.getName());
+                        } else {
+                            line = line.replaceAll("\\{king}", Util.color(Config.getConfig().getString("koth-in-progress.king-null-placeholder")));
                         }
+
+                        if(papiSupport) line = PlaceholderAPI.setPlaceholders(player, line);
+
+                        manager.setSlot(index, line);
+                        index--;
 
                     }
 
                 }
 
-
-
             }
 
-
-        }.runTaskTimer(plugin, 0L, 2L);
-
-
+        }
 
     }
 

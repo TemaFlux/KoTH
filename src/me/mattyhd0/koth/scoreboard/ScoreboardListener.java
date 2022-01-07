@@ -1,5 +1,6 @@
 package me.mattyhd0.koth.scoreboard;
 
+import me.mattyhd0.katylib.scoreboard.ScoreboardManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -11,54 +11,46 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-public class ScheduleTask {
-
-    public static void initTask(Plugin plugin){
+public class ScheduleTask extends BukkitRunnable{
 
 
-        new BukkitRunnable(){
-
-            String[] days = {"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"};
-            String lastCheck = "";
+    String[] days = {"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"};
+    String lastCheck = "";
 
 
-            @Override
-            public void run() {
+    @Override
+    public void run() {
 
-                FileConfiguration schedule = Config.getScheduleFile().get();
+        FileConfiguration schedule = Config.getScheduleFile().get();
 
-                String tz = schedule.getString("options.timezone");
-                TimeZone timeZone = tz.equals("DEFAULT") ? TimeZone.getDefault() : TimeZone.getTimeZone(tz);
+        String tz = schedule.getString("options.timezone");
+        TimeZone timeZone = tz.equals("DEFAULT") ? TimeZone.getDefault() : TimeZone.getTimeZone(tz);
 
-                DateFormat df = new SimpleDateFormat("HH:mm");
-                df.setTimeZone(timeZone);
+        DateFormat df = new SimpleDateFormat("HH:mm");
+        df.setTimeZone(timeZone);
 
-                Date date = df.getCalendar().getTime();
+        Calendar calendar = Calendar.getInstance(timeZone);
+        Date date = calendar.getTime();
 
-                String day = days[date.getDay()];
-                String clock = df.format(date);
+        String day = days[date.getDay()];
+        String clock = df.format(date);
 
-                if(!lastCheck.equals(clock)){
+        if(!lastCheck.equals(clock)){
 
-                    lastCheck = clock;
+            lastCheck = clock;
 
-                    if(Bukkit.getServer().getOnlinePlayers().size() >= schedule.getInt("options.minimum-players")){
+            if(Bukkit.getServer().getOnlinePlayers().size() >= schedule.getInt("options.minimum-players")){
 
-                        for(String scheduleLine: schedule.getStringList("schedule."+day)){
+                for(String scheduleLine: schedule.getStringList("schedule."+day)){
 
-                            String[] data = scheduleLine.split(" ");
+                    String[] data = scheduleLine.split(" ");
 
-                            if(clock.equals(data[0])){ //Koth Start!
+                    if(clock.equals(data[0])){ //Koth Start!
 
-                                CurrentKoth.setCurrectKoth(new CurrentKoth(data[1], Config.getConfig().getInt("koth-duration")));
-                                break;
-                            }
-
-
-                        }
+                        CurrentKoth.setCurrectKoth(new CurrentKoth(data[1], Config.getConfig().getInt("koth-duration")));
+                        break;
 
                     }
 
@@ -66,8 +58,7 @@ public class ScheduleTask {
 
             }
 
-        }.runTaskTimer(plugin, 0L, 20L);
+        }
 
     }
-
 }

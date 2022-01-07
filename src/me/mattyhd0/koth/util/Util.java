@@ -1,7 +1,10 @@
 package me.mattyhd0.koth.util;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -142,5 +145,33 @@ public class Util {
 
     }
 
+    public static Location getLocationFromConfig(YMLFile ymlFile, String key){
+
+        FileConfiguration config = ymlFile.get();
+        double x, y, z;
+
+        x = config.getDouble(key+".x");
+        y = config.getDouble(key+".y");
+        z = config.getDouble(key+".z");
+
+        World world = Bukkit.getWorld(config.getString(key+".world"));
+
+        if(world != null) return new Location(world, x, y, z);
+        return null;
+
+    }
+
+    public static void saveLocationToConfig(YMLFile ymlFile, String key, Location location){
+
+        FileConfiguration config = ymlFile.get();
+
+        config.set(key+".x", location.getX());
+        config.set(key+".y", location.getY());
+        config.set(key+".z", location.getZ());
+        config.set(key+".world", location.getWorld().getName());
+
+        ymlFile.save();
+
+    }
 
 }

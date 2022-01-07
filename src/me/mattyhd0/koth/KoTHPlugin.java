@@ -1,5 +1,6 @@
 package me.mattyhd0.koth;
 
+import me.mattyhd0.katylib.scoreboard.ScoreboardManager;
 import me.mattyhd0.katylib.update.checker.UpdateChecker;
 import me.mattyhd0.koth.bstats.Metrics;
 import me.mattyhd0.koth.commands.KothCommand;
@@ -10,12 +11,10 @@ import me.mattyhd0.koth.manager.reward.RewardManager;
 import me.mattyhd0.koth.playeable.KothDetectionTask;
 import me.mattyhd0.koth.schedule.ScheduleTask;
 import me.mattyhd0.koth.scoreboard.ScoreboardListener;
-import me.mattyhd0.koth.scoreboard.ScoreboardManager;
 import me.mattyhd0.koth.scoreboard.ScoreboardTask;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,11 +30,6 @@ public class KoTHPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        //Did you decompile the plugin? you should feel ashamed.
-
-        //ConfigurationSerialization.registerClass(CommandReward.class);
-        //ConfigurationSerialization.registerClass(ItemReward.class);
-
         setPlugin(this);
         Metrics metrics = new Metrics(this, 13335);
         Config.loadConfiguration();
@@ -43,11 +37,11 @@ public class KoTHPlugin extends JavaPlugin {
         setupListeners();
         detectSupport("PlaceholderAPI");
         KothSelectionWand.setupWand();
-        KothManager.loadAllKoths();
         RewardManager.loadAllRewards();
-        ScoreboardTask.initTask(this);
-        KothDetectionTask.initTask(this);
-        ScheduleTask.initTask(this);
+        KothManager.loadAllKoths(true);
+        new ScoreboardTask().runTaskTimer(this, 0L, 2L);
+        new KothDetectionTask().runTaskTimer(this, 0L, 20L);
+        new ScheduleTask().runTaskTimer(this, 0L, 20L);
         updateChecker(this, 97741);
 
     }
