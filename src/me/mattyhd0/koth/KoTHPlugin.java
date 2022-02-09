@@ -1,17 +1,18 @@
 package me.mattyhd0.koth;
 
-import me.mattyhd0.katylib.scoreboard.ScoreboardManager;
-import me.mattyhd0.katylib.update.checker.UpdateChecker;
 import me.mattyhd0.koth.bstats.Metrics;
 import me.mattyhd0.koth.commands.KothCommand;
 import me.mattyhd0.koth.creator.selection.KothSelectionListener;
 import me.mattyhd0.koth.creator.selection.KothSelectionWand;
 import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.manager.reward.RewardManager;
+import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
 import me.mattyhd0.koth.playeable.KothDetectionTask;
 import me.mattyhd0.koth.schedule.ScheduleTask;
 import me.mattyhd0.koth.scoreboard.ScoreboardListener;
+import me.mattyhd0.koth.scoreboard.ScoreboardManager;
 import me.mattyhd0.koth.scoreboard.ScoreboardTask;
+import me.mattyhd0.koth.update.UpdateChecker;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
@@ -44,6 +45,9 @@ public class KoTHPlugin extends JavaPlugin {
         new ScheduleTask().runTaskTimer(this, 0L, 20L);
         updateChecker(this, 97741);
 
+        if(supportedPlugins.get("PlaceholderAPI")){
+            new KoTHPlaceholder().register();
+        }
     }
 
     @Override

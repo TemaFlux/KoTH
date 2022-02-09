@@ -60,6 +60,8 @@ public class KothCommand implements CommandExecutor {
                 help(sender);
             }
 
+        } else {
+            noPermission(sender);
         }
 
         return true;
