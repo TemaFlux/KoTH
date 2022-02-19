@@ -1,4 +1,4 @@
-package me.mattyhd0.koth.scoreboard;
+package me.mattyhd0.koth.scoreboard.koth;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

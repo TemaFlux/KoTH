@@ -1,5 +1,6 @@
 package me.mattyhd0.koth.playeable;
 
+import me.mattyhd0.koth.scoreboard.ScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.reward.api.Reward;
 import me.mattyhd0.koth.manager.reward.RewardManager;
@@ -17,67 +18,53 @@ public class KothDetectionTask extends BukkitRunnable{
 
         CurrentKoth currectKoth = CurrentKoth.getCurrectKoth();
 
-        if(currectKoth != null){
+        if(currectKoth == null) return;
 
-            if(currectKoth.getTimeLeft() > 1){
+        if (currectKoth.getTimeLeft() <= 0) {
 
-                CurrentKoth.getCurrectKoth().tick();
+            Player winner = currectKoth.getKing();
 
-                int broadcastEvery = Config.getConfig().getInt("koth-in-progress.broadcast-every");
+            String message = winner == null ? Config.getMessage("koth-finised.without-winner") : Config.getMessage("koth-finised.with-winner");
 
-                if(currectKoth.getTimeLeft() % broadcastEvery == 0){
+            message = message.replaceAll("\\{name}", currectKoth.getKoth().getDisplayName());
 
-                    String message;
+            if (winner != null) {
+                message = message.replaceAll("\\{player}", winner.getName());
+                if (Config.getConfig().getBoolean("koth-finish.winner-fireworks")) WinEffect.apply(winner);
 
-                    if(currectKoth.getKing() != null){
-                        message = Config.getMessage("koth-in-progress.with-king");
-                    } else {
-                        message = Config.getMessage("koth-in-progress.without-king");
-                    }
-
-                    Location kothLocation = currectKoth.getKoth().getCenterLocation();
-
-                    message = message.replaceAll("\\{name}", currectKoth.getKoth().getDisplayName())
-                            .replaceAll("\\{world}", kothLocation.getWorld().getName())
-                            .replaceAll("\\{x}", (int)kothLocation.getX()+"")
-                            .replaceAll("\\{y}", (int)kothLocation.getY()+"")
-                            .replaceAll("\\{z}", (int)kothLocation.getZ()+"")
-                            .replaceAll("\\{time_left}", currectKoth.getFormattedTimeLeft());
-
-                    if(currectKoth.getKing() != null) message = message.replaceAll("\\{player}", currectKoth.getKing().getName());
-
-                    Bukkit.broadcastMessage(message);
+                for (Reward reward : RewardManager.getAllRewards()) {
+                    reward.give(winner);
                 }
-
-            } else {
-
-                Player winner = currectKoth.getKing();
-
-                String message;
-
-                if(winner != null){
-                    message = Config.getMessage("koth-finised.with-winner");
-                } else {
-                    message = Config.getMessage("koth-finised.without-winner");
-                }
-
-                message = message.replaceAll("\\{name}", currectKoth.getKoth().getDisplayName());
-
-                if(winner != null) {
-                    message = message.replaceAll("\\{player}", winner.getName());
-                    if(Config.getConfig().getBoolean("koth-finish.winner-fireworks")) WinEffect.apply(winner);
-
-                    for(Reward reward: RewardManager.getAllRewards()){
-                        reward.give(winner);
-                    }
-                }
-
-                Bukkit.broadcastMessage(message);
-                CurrentKoth.stopCurrentKoth();
-
             }
+
+            Bukkit.broadcastMessage(message);
+            CurrentKoth.stopCurrentKoth();
 
         }
 
+        currectKoth.tick();
+        ScoreboardHook.getHook().update(currectKoth);
+
+        int broadcastEvery = Config.getConfig().getInt("koth-in-progress.broadcast-every");
+
+        if (currectKoth.getTimeLeft() % broadcastEvery == 0) {
+
+            String message = currectKoth.getKing() == null ? Config.getMessage("koth-in-progress.without-king") : Config.getMessage("koth-in-progress.with-king");
+
+            Location kothLocation = currectKoth.getKoth().getCenterLocation();
+
+            message = message.replaceAll("\\{name}", currectKoth.getKoth().getDisplayName())
+                    .replaceAll("\\{world}", kothLocation.getWorld().getName())
+                    .replaceAll("\\{x}", (int) kothLocation.getX() + "")
+                    .replaceAll("\\{y}", (int) kothLocation.getY() + "")
+                    .replaceAll("\\{z}", (int) kothLocation.getZ() + "")
+                    .replaceAll("\\{time_left}", currectKoth.getFormattedTimeLeft());
+
+            if (currectKoth.getKing() != null) message = message.replaceAll("\\{player}", currectKoth.getKing().getName());
+
+            Bukkit.broadcastMessage(message);
+        }
+
     }
+
 }

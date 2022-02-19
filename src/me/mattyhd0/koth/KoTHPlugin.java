@@ -9,9 +9,11 @@ import me.mattyhd0.koth.manager.reward.RewardManager;
 import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
 import me.mattyhd0.koth.playeable.KothDetectionTask;
 import me.mattyhd0.koth.schedule.ScheduleTask;
-import me.mattyhd0.koth.scoreboard.ScoreboardListener;
-import me.mattyhd0.koth.scoreboard.ScoreboardManager;
-import me.mattyhd0.koth.scoreboard.ScoreboardTask;
+import me.mattyhd0.koth.scoreboard.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.KoTHScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.scoreboard.r.ScoreboardRHook;
+import me.mattyhd0.koth.scoreboard.koth.ScoreboardListener;
+import me.mattyhd0.koth.scoreboard.koth.ScoreboardManager;
 import me.mattyhd0.koth.update.UpdateChecker;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
@@ -37,10 +39,10 @@ public class KoTHPlugin extends JavaPlugin {
         setupCommands();
         setupListeners();
         detectSupport("PlaceholderAPI");
+        setupScoreboardHook();
         KothSelectionWand.setupWand();
         RewardManager.loadAllRewards();
         KothManager.loadAllKoths(true);
-        new ScoreboardTask().runTaskTimer(this, 0L, 2L);
         new KothDetectionTask().runTaskTimer(this, 0L, 20L);
         new ScheduleTask().runTaskTimer(this, 0L, 20L);
         updateChecker(this, 97741);
@@ -62,6 +64,21 @@ public class KoTHPlugin extends JavaPlugin {
 
     public void setupCommands(){
         getCommand("koth").setExecutor(new KothCommand());
+    }
+
+    public void setupScoreboardHook(){
+
+        ScoreboardHook scoreboardHook = new KoTHScoreboardHook();
+
+        if(getServer().getPluginManager().getPlugin("Scoreboard-revision") != null){
+            scoreboardHook = new ScoreboardRHook();
+        }
+
+        scoreboardHook.hook();
+        Bukkit.getConsoleSender().sendMessage(
+                Util.color("&8[&cKoTH&8] &7Scoreboard Hook: &c"+scoreboardHook.getHookName())
+        );
+
     }
 
     public static void setPlugin(Plugin pl){

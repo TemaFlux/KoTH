@@ -1,6 +1,7 @@
 package me.mattyhd0.koth.playeable;
 
-import me.mattyhd0.koth.scoreboard.ScoreboardManager;
+import me.mattyhd0.koth.scoreboard.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.koth.ScoreboardManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.manager.koth.KothManager;
@@ -22,11 +23,11 @@ public class CurrentKoth {
     private Player king;
     private List<Player> playersInZone;
 
-
     public CurrentKoth(String kothId, int timeLeft){
 
         this.id = kothId;
         this.timeLeft = timeLeft;
+        ScoreboardHook.getHook().onKothStart(this);
 
     }
 
@@ -34,6 +35,7 @@ public class CurrentKoth {
 
         this.id = kothId;
         this.timeLeft = Config.getConfig().getInt("koth-duration");
+        ScoreboardHook.getHook().onKothStart(this);
 
     }
 
@@ -62,7 +64,7 @@ public class CurrentKoth {
     }
 
     public static void stopCurrentKoth(){
-        ScoreboardManager.disableAllScoreboards();
+        ScoreboardHook.getHook().onKothEnd(currectKoth);
         currectKoth = null;
     }
 

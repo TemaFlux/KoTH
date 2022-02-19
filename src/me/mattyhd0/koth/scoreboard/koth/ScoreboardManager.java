@@ -1,5 +1,6 @@
-package me.mattyhd0.koth.scoreboard;
+package me.mattyhd0.koth.scoreboard.koth;
 
+import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
