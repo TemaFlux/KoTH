@@ -10,17 +10,18 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class KothDetectionTask extends BukkitRunnable{
+public class KothDetectionTask extends BukkitRunnable {
 
 
     @Override
     public void run() {
 
         CurrentKoth currectKoth = CurrentKoth.getCurrectKoth();
-
         if(currectKoth == null) return;
 
-        if (currectKoth.getTimeLeft() <= 0) {
+        currectKoth.broadcastTick();
+
+        if (currectKoth.getTimeLeft() <= 0) { //Koth Finish
 
             Player winner = currectKoth.getKing();
 
@@ -45,9 +46,8 @@ public class KothDetectionTask extends BukkitRunnable{
         currectKoth.tick();
         ScoreboardHook.getHook().update(currectKoth);
 
-        int broadcastEvery = Config.getConfig().getInt("koth-in-progress.broadcast-every");
-
-        if (currectKoth.getTimeLeft() % broadcastEvery == 0) {
+        if (currectKoth.getBroadcastTick() <= 0) {
+            currectKoth.resetBroadcastInterval();
 
             String message = currectKoth.getKing() == null ? Config.getMessage("koth-in-progress.without-king") : Config.getMessage("koth-in-progress.with-king");
 

@@ -3,6 +3,9 @@ update-checker: true
 #The time in seconds it takes for a koth to finish once started
 koth-duration: 900
 
+#Resets the timer if the current king changes or leaves the area
+reset-time-on-king-change: false
+
 koth-in-progress:
   #Every few seconds there will be a broadcast of who is dominating the hill
   broadcast-every: 60

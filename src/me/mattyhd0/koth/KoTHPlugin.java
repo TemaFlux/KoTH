@@ -7,6 +7,7 @@ import me.mattyhd0.koth.creator.selection.KothSelectionWand;
 import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.manager.reward.RewardManager;
 import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
+import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.playeable.KothDetectionTask;
 import me.mattyhd0.koth.schedule.ScheduleTask;
 import me.mattyhd0.koth.scoreboard.ScoreboardHook;
@@ -54,7 +55,9 @@ public class KoTHPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        ScoreboardManager.disableAllScoreboards();
+        CurrentKoth currentKoth = CurrentKoth.getCurrectKoth();
+        if(currentKoth != null) ScoreboardHook.getHook().onKothEnd(currentKoth);
+
     }
 
     public void setupListeners(){

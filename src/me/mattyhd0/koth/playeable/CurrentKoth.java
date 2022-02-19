@@ -1,7 +1,6 @@
 package me.mattyhd0.koth.playeable;
 
 import me.mattyhd0.koth.scoreboard.ScoreboardHook;
-import me.mattyhd0.koth.scoreboard.koth.ScoreboardManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.manager.koth.KothManager;
@@ -19,14 +18,20 @@ public class CurrentKoth {
 
 
     private String id;
+    private int defaultDuration;
     private int timeLeft;
+    private int defaultBroadcastInterval;
+    private int broadcastTick;
     private Player king;
     private List<Player> playersInZone;
 
-    public CurrentKoth(String kothId, int timeLeft){
+    public CurrentKoth(String kothId, int time){
 
         this.id = kothId;
-        this.timeLeft = timeLeft;
+        this.defaultBroadcastInterval = Config.getConfig().getInt("koth-in-progress.broadcast-every");
+        this.broadcastTick = defaultBroadcastInterval;
+        this.defaultDuration = time;
+        this.timeLeft = defaultDuration;
         ScoreboardHook.getHook().onKothStart(this);
 
     }
@@ -34,7 +39,10 @@ public class CurrentKoth {
     public CurrentKoth(String kothId){
 
         this.id = kothId;
-        this.timeLeft = Config.getConfig().getInt("koth-duration");
+        this.defaultBroadcastInterval = Config.getConfig().getInt("koth-in-progress.broadcast-every");
+        this.broadcastTick = defaultBroadcastInterval;
+        this.defaultDuration = Config.getConfig().getInt("koth-duration");
+        this.timeLeft = defaultDuration;
         ScoreboardHook.getHook().onKothStart(this);
 
     }
@@ -69,11 +77,31 @@ public class CurrentKoth {
     }
 
     public Koth getKoth(){
-        return KothManager.getKoth(currectKoth.getId());
+        return KothManager.getKoth(getId());
+    }
+
+    public int getDefaultDuration() {
+        return defaultDuration;
     }
 
     public int getTimeLeft(){
         return timeLeft;
+    }
+
+    public void broadcastTick(){
+        broadcastTick--;
+    }
+
+    public int getDefaultBroadcastInterval() {
+        return defaultBroadcastInterval;
+    }
+
+    public int getBroadcastTick() {
+        return broadcastTick;
+    }
+
+    public void resetBroadcastInterval() {
+        broadcastTick = defaultBroadcastInterval;
     }
 
     public String getId() {
@@ -106,11 +134,14 @@ public class CurrentKoth {
         if(king == null || !players.contains(king)){
             king = null;
             if(players.size() > 0) king = players.get(0);
+            playersInZone = players;
+            timeLeft = Config.getConfig().getBoolean("reset-time-on-king-change") ? defaultDuration : timeLeft-1;
+            return;
         }
 
         playersInZone = players;
 
-        timeLeft -= 1;
+        timeLeft--;
 
     }
 
