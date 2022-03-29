@@ -3,7 +3,7 @@ package me.mattyhd0.koth;
 import me.mattyhd0.koth.bstats.Metrics;
 import me.mattyhd0.koth.commands.KothCommand;
 import me.mattyhd0.koth.creator.selection.KothSelectionListener;
-import me.mattyhd0.koth.creator.selection.KothSelectionWand;
+import me.mattyhd0.koth.creator.selection.item.KothSelectionWand;
 import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.manager.reward.RewardManager;
 import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
@@ -13,13 +13,14 @@ import me.mattyhd0.koth.schedule.ScheduleTask;
 import me.mattyhd0.koth.scoreboard.ScoreboardHook;
 import me.mattyhd0.koth.scoreboard.hook.KoTHScoreboardHook;
 import me.mattyhd0.koth.scoreboard.hook.scoreboard.r.ScoreboardRHook;
+import me.mattyhd0.koth.scoreboard.hook.sternalboard.SternalBoardHook;
 import me.mattyhd0.koth.scoreboard.koth.ScoreboardListener;
-import me.mattyhd0.koth.scoreboard.koth.ScoreboardManager;
 import me.mattyhd0.koth.update.UpdateChecker;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,22 +29,25 @@ import java.util.Map;
 
 public class KoTHPlugin extends JavaPlugin {
 
-    public static Plugin plugin;
+    private static KoTHPlugin instance;
+    private ItemStack selectionWandItem;
+    private KothManager kothManager;
+    private RewardManager rewardManager;
     public static Map<String, Boolean> supportedPlugins = new HashMap<>();
 
     @Override
     public void onEnable() {
 
-        setPlugin(this);
+        setInstance(this);
         Metrics metrics = new Metrics(this, 13335);
-        Config.loadConfiguration();
         setupCommands();
         setupListeners();
+        Config.loadConfiguration();
+        selectionWandItem = new KothSelectionWand();
         detectSupport("PlaceholderAPI");
         setupScoreboardHook();
-        KothSelectionWand.setupWand();
-        RewardManager.loadAllRewards();
-        KothManager.loadAllKoths(true);
+        kothManager = new KothManager(true);
+        rewardManager = new RewardManager();
         new KothDetectionTask().runTaskTimer(this, 0L, 20L);
         new ScheduleTask().runTaskTimer(this, 0L, 20L);
         updateChecker(this, 97741);
@@ -57,7 +61,6 @@ public class KoTHPlugin extends JavaPlugin {
     public void onDisable() {
         CurrentKoth currentKoth = CurrentKoth.getCurrectKoth();
         if(currentKoth != null) ScoreboardHook.getHook().onKothEnd(currentKoth);
-
     }
 
     public void setupListeners(){
@@ -75,6 +78,8 @@ public class KoTHPlugin extends JavaPlugin {
 
         if(getServer().getPluginManager().getPlugin("Scoreboard-revision") != null){
             scoreboardHook = new ScoreboardRHook();
+        } else if (getServer().getPluginManager().getPlugin("SternalBoard") != null){
+            scoreboardHook = new SternalBoardHook();
         }
 
         scoreboardHook.hook();
@@ -84,15 +89,15 @@ public class KoTHPlugin extends JavaPlugin {
 
     }
 
-    public static void setPlugin(Plugin pl){
-        plugin = pl;
+    private static void setInstance(KoTHPlugin pl){
+        instance = pl;
         Bukkit.getConsoleSender().sendMessage(
                 Util.color("&8[&cKoTH&8] &7Enabling KoTH &cv"+pl.getDescription().getVersion())
         );
     }
 
-    public static Plugin getPlugin() {
-        return plugin;
+    public static KoTHPlugin getInstance() {
+        return instance;
     }
 
     public static void detectSupport(String plugin){
@@ -138,5 +143,17 @@ public class KoTHPlugin extends JavaPlugin {
                 console.sendMessage(message2);
             }
         }
+    }
+
+    public ItemStack getSelectionWandItem() {
+        return selectionWandItem;
+    }
+
+    public KothManager getKothManager() {
+        return kothManager;
+    }
+
+    public RewardManager getRewardManager() {
+        return rewardManager;
     }
 }

@@ -7,12 +7,12 @@ public class KothLoadTask extends BukkitRunnable {
     boolean sayToConsole;
 
     public KothLoadTask(boolean sayToConsole){
-        sayToConsole = sayToConsole;
+        this.sayToConsole = sayToConsole;
     }
 
     @Override
     public void run() {
-        KothManager.loadAllKoths(sayToConsole);
+        //KothManager.loadAllKoths(sayToConsole);
     }
 
 }

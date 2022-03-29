@@ -17,7 +17,7 @@ public class YMLFile {
     
     public YMLFile(String fileName) {
         this.fileName = fileName;
-        this.file = new File(KoTHPlugin.getPlugin().getDataFolder(), this.fileName);
+        this.file = new File(KoTHPlugin.getInstance().getDataFolder(), this.fileName);
         this.check();
     }
     
@@ -40,7 +40,7 @@ public class YMLFile {
     
     public void createFile() {
         this.file.getParentFile().mkdirs();
-        KoTHPlugin.getPlugin().saveResource(this.fileName, false);
+        KoTHPlugin.getInstance().saveResource(this.fileName, false);
     }
     
     public void loadFile() {

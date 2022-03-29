@@ -16,9 +16,9 @@ import java.util.Map;
 
 public class RewardManager {
 
-    public static HashMap<String, Reward> rewards = new HashMap<>();
+    public HashMap<String, Reward> rewards = new HashMap<>();
 
-    public static void loadAllRewards(){
+    public RewardManager(){
 
         YMLFile ymlFile = Config.getRewardsFile();
         ymlFile.loadFile();
@@ -45,7 +45,7 @@ public class RewardManager {
 
     }
 
-    public static void saveAllRewards(){
+    public void saveAllRewards(){
 
         YMLFile ymlFile = Config.getRewardsFile();
         FileConfiguration rewardsConfig = ymlFile.get();
@@ -60,46 +60,45 @@ public class RewardManager {
 
     }
 
-    public static void put(String id, Reward reward){
+    public void put(String id, Reward reward){
         rewards.put(id, reward);
     }
 
-    public static Reward getReward(String id){
+    public Reward getReward(String id){
         return rewards.get(id);
     }
 
-    public static List<Reward> getAllRewards(){
+    public List<Reward> getAllRewards(){
         return new ArrayList<>(rewards.values());
     }
 
-    public static void create(RewardBuilder builder){
+    public void create(RewardBuilder builder){
 
         YMLFile rewardsFile = Config.getRewardsFile();
         rewardsFile.loadFile();
-        FileConfiguration rewards = rewardsFile.get();
+        FileConfiguration rewardsConfiguration = rewardsFile.get();
 
         String id = builder.getId();
         Reward reward = builder.getReward();
 
-        rewards.set(id+".chances", reward.getChances());
-        rewards.set(id+".reward", reward.getReward());
+        rewardsConfiguration.set(id+".chances", reward.getChances());
+        rewardsConfiguration.set(id+".reward", reward.getReward());
 
         rewardsFile.save();
-
-        loadAllRewards();
+        rewards.put(id, reward);
 
     }
 
-    public static void delete(String id){
+    public void delete(String id){
 
         YMLFile rewardsFile = Config.getRewardsFile();
         rewardsFile.loadFile();
-        FileConfiguration rewards = rewardsFile.get();
+        FileConfiguration rewardsConfiguration = rewardsFile.get();
 
-        rewards.set(id, null);
+        rewardsConfiguration.set(id, null);
 
         rewardsFile.save();
-        loadAllRewards();
+        rewards.remove(id);
 
     }
 

@@ -46,7 +46,7 @@ public class WinEffect {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(KoTHPlugin.getPlugin(), 0L, 10L);
+        }.runTaskTimer(KoTHPlugin.getInstance(), 0L, 10L);
 
     }
 

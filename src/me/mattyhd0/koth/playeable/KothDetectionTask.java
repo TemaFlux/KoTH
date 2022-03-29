@@ -1,5 +1,6 @@
 package me.mattyhd0.koth.playeable;
 
+import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.scoreboard.ScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.reward.api.Reward;
@@ -17,6 +18,8 @@ public class KothDetectionTask extends BukkitRunnable {
     public void run() {
 
         CurrentKoth currectKoth = CurrentKoth.getCurrectKoth();
+        RewardManager rewardManager = KoTHPlugin.getInstance().getRewardManager();
+
         if(currectKoth == null) return;
 
         currectKoth.broadcastTick();
@@ -33,7 +36,7 @@ public class KothDetectionTask extends BukkitRunnable {
                 message = message.replaceAll("\\{player}", winner.getName());
                 if (Config.getConfig().getBoolean("koth-finish.winner-fireworks")) WinEffect.apply(winner);
 
-                for (Reward reward : RewardManager.getAllRewards()) {
+                for (Reward reward : rewardManager.getAllRewards()) {
                     reward.give(winner);
                 }
             }

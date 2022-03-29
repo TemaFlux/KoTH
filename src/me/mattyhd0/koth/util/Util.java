@@ -8,6 +8,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,73 +46,52 @@ public class Util {
 
     }
 
+    public static List<String> coloredList(Collection<String> list){
+        List<String> coloredList = new ArrayList<>();
+
+        for(String line: list){
+            coloredList.add(color(line));
+        }
+
+        return coloredList;
+
+    }
+
     public static boolean locationIsInZone(Location location, Location position1, Location position2){
 
         int locationX = (int) location.getX();
         int locationY = (int) location.getY();
         int locationZ = (int) location.getZ();
 
-        int position1X = (int) position1.getX();
-        int position1Y = (int) position1.getY();
-        int position1Z = (int) position1.getZ();
+        double position1X = Math.max(position1.getX(), position2.getX());
+        double position1Y = Math.max(position1.getY(), position2.getY());
+        double position1Z = Math.max(position1.getZ(), position2.getZ());
 
-        int position2X = (int) position2.getX();
-        int position2Y = (int) position2.getY();
-        int position2Z = (int) position2.getZ();
+        double position2X = Math.min(position1.getX(), position2.getX());
+        double position2Y = Math.min(position1.getY(), position2.getY());
+        double position2Z = Math.min(position1.getZ(), position2.getZ());
 
-        if(position2X > position1X){
-            int temp = position1X;
-            position1X = position2X;
-            position2X = temp;
-        }
-
-        if(position2Y > position1Y){
-            int temp = position1Y;
-            position1Y = position2Y;
-            position2Y = temp;
-        }
-
-        if(position2Z > position1Z){
-            int temp = position1Z;
-            position1Z = position2Z;
-            position2Z = temp;
-        }
+        /*System.out.println(
+                MessageFormat.format("{0} {1} {2} > {3} {4} {5} | {6} {7} {8}", position1X, position1Y, position1Z, position2X, position2Y, position2Z, locationX, locationY, locationZ)
+        );*/
 
         return (
-                        (locationX <= position1X  && locationX >= position2X) &&
-                        (locationY <= position1Y && locationY >= position2Y) &&
-                        (locationZ <= position1Z && locationZ >= position2Z)
+                        (position1X >= locationX  && locationX >= position2X) &&
+                        (position1Y >= locationY && locationY >= position2Y) &&
+                        (position1Z >= locationZ && locationZ >= position2Z)
                 );
 
     }
 
     public static Location getCenterFrom(Location position1, Location position2){
 
-        int position1X = (int) position1.getX();
-        int position1Y = (int) position1.getY();
-        int position1Z = (int) position1.getZ();
+        double position1X = Math.max(position1.getX(), position2.getX());
+        double position1Y = Math.max(position1.getY(), position2.getY());
+        double position1Z = Math.max(position1.getZ(), position2.getZ());
 
-        int position2X = (int) position2.getX();
-        int position2Y = (int) position2.getY();
-        int position2Z = (int) position2.getZ();
-
-        if(position2X > position1X){
-            int temp = position1X;
-            position1X = position2X;
-            position2X = temp;
-        }
-
-        if(position2Y > position1Y){
-            int temp = position1Y;
-            position1Y = position2Y;
-            position2Y = temp;
-        }
-
-        if(position2Z > position1Z){
-            int temp = position1Z;
-            position1Z = position2Z;
-            position2Z = temp;
-        }
+        double position2X = Math.min(position1.getX(), position2.getX());
+        double position2Y = Math.min(position1.getY(), position2.getY());
+        double position2Z = Math.min(position1.getZ(), position2.getZ());
 
         return new Location(position1.getWorld(), (position1X+position2X)/2, (position1Y+position2Y)/2, (position1Z+position2Z)/2);
 

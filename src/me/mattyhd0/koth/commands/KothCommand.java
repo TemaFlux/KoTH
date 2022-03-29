@@ -1,5 +1,6 @@
 package me.mattyhd0.koth.commands;
 
+import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.builders.KothBuilder;
 import me.mattyhd0.koth.reward.types.CommandReward;
@@ -7,7 +8,7 @@ import me.mattyhd0.koth.reward.types.ItemReward;
 import me.mattyhd0.koth.reward.api.Reward;
 import me.mattyhd0.koth.builders.RewardBuilder;
 import me.mattyhd0.koth.creator.selection.KothSelection;
-import me.mattyhd0.koth.creator.selection.KothSelectionWand;
+import me.mattyhd0.koth.creator.selection.item.KothSelectionWand;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.manager.reward.RewardManager;
@@ -82,10 +83,10 @@ public class KothCommand implements CommandExecutor {
             sender.sendMessage(
                     Config.getMessage("commands.koth.reload.reloaded")
             );
-            Config.loadConfiguration();
-            RewardManager.loadAllRewards();
-            KothManager.loadAllKoths(true);
-            KothSelectionWand.setupWand();
+            KoTHPlugin plugin = KoTHPlugin.getInstance();
+
+            plugin.onDisable();
+            plugin.onEnable();
 
         } else {
             noPermission(sender);
@@ -101,7 +102,7 @@ public class KothCommand implements CommandExecutor {
 
                 Player player = (Player) sender;
 
-                player.getInventory().addItem(KothSelectionWand.getWand());
+                player.getInventory().addItem(KoTHPlugin.getInstance().getSelectionWandItem());
                 sender.sendMessage(Config.getMessage("commands.koth.givewand.gived"));
 
             } else {
@@ -131,7 +132,9 @@ public class KothCommand implements CommandExecutor {
 
                     if(pos1 != null && pos2 != null){
 
-                        if(KothManager.getKoth(arg[1]) == null) {
+                        KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+
+                        if(kothManager.getKothByID(arg[1]) == null) {
 
                             String id = arg[1];
                             String name = "";
@@ -142,15 +145,13 @@ public class KothCommand implements CommandExecutor {
 
                             name = name.substring(0, name.length() - 1);
 
-                            KothManager.create(
+                            kothManager.create(
                                     new KothBuilder()
                                             .setId(id)
                                             .setName(name)
                                             .setPos1(pos1)
                                             .setPos2(pos2)
                             );
-
-                            KothManager.loadAllKoths(false);
 
                             sender.sendMessage(
                                     Config.getMessage("commands.koth.create.koth-created")
@@ -192,7 +193,8 @@ public class KothCommand implements CommandExecutor {
 
             if (arg.length == 2) {
 
-                Koth koth = KothManager.getKoth(arg[1]);
+                KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+                Koth koth = kothManager.getKothByID(arg[1]);
                 if (koth != null) {
 
                     sender.sendMessage(
@@ -202,7 +204,7 @@ public class KothCommand implements CommandExecutor {
 
                     );
 
-                    KothManager.delete(arg[1]);
+                    kothManager.delete(arg[1]);
 
                 } else {
                     sender.sendMessage(
@@ -229,7 +231,9 @@ public class KothCommand implements CommandExecutor {
 
             if (arg.length == 2) {
 
-                Koth koth = KothManager.getKoth(arg[1]);
+                KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+                Koth koth = kothManager.getKothByID(arg[1]);
+
                 if (koth != null) {
 
                     Player player = (Player) sender;
@@ -272,12 +276,14 @@ public class KothCommand implements CommandExecutor {
 
                 if(CurrentKoth.getCurrectKoth() == null) {
 
-                    if (KothManager.getKoth(id) != null) {
+                    KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+
+                    if (kothManager.getKothByID(id) != null) {
 
                         CurrentKoth.setCurrectKoth(new CurrentKoth(id, Config.getConfig().getInt("koth-duration")));
                         sender.sendMessage(
                                 Config.getMessage("commands.koth.start.koth-started")
-                                        .replaceAll("\\{name}", KothManager.getKoth(id).getDisplayName())
+                                        .replaceAll("\\{name}", kothManager.getKothByID(id).getDisplayName())
                         );
 
                     } else {
@@ -311,7 +317,9 @@ public class KothCommand implements CommandExecutor {
 
             if (arg.length == 1) {
 
-                List<Koth> koths = KothManager.getKoths();
+                KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+                List<Koth> koths = kothManager.getKoths();
+
                 if (koths.size() > 0) {
 
                     for (Koth koth : koths) {
@@ -381,9 +389,11 @@ public class KothCommand implements CommandExecutor {
 
         if(sender.hasPermission("koth.rewards")){
 
+            RewardManager rewardManager = KoTHPlugin.getInstance().getRewardManager();
+
             if(arg.length >= 5 && arg[1].equalsIgnoreCase("create")){
 
-                if(RewardManager.getReward(arg[2]) == null) {
+                if(rewardManager.getReward(arg[2]) == null) {
 
                     double chances = 100;
                     boolean chanceIsValid = true;
@@ -405,7 +415,7 @@ public class KothCommand implements CommandExecutor {
 
                             command = command.substring(0, command.length() - 1);
 
-                            RewardManager.create(
+                            rewardManager.create(
                                     new RewardBuilder()
                                             .setId(arg[2])
                                             .setReward(new CommandReward(arg[2], chances, command))
@@ -422,7 +432,7 @@ public class KothCommand implements CommandExecutor {
                             Player player = (Player) sender;
                             if (player.getItemInHand().getType() != Material.AIR) {
 
-                                RewardManager.create(
+                                rewardManager.create(
                                         new RewardBuilder()
                                                 .setId(arg[2])
                                                 .setReward(new ItemReward(arg[2], chances, player.getItemInHand().clone()))
@@ -461,13 +471,13 @@ public class KothCommand implements CommandExecutor {
 
             } else if (arg.length == 3 && arg[1].equalsIgnoreCase("delete")){
 
-                if(RewardManager.getReward(arg[2]) != null){
+                if(rewardManager.getReward(arg[2]) != null){
 
                     sender.sendMessage(
                             Config.getMessage("commands.koth.reward.delete.reward-deleted")
                                     .replaceAll("\\{id}", arg[2])
                     );
-                    RewardManager.delete(arg[2]);
+                    rewardManager.delete(arg[2]);
 
                 } else {
                     sender.sendMessage(
@@ -478,7 +488,7 @@ public class KothCommand implements CommandExecutor {
 
             } else if (arg.length == 2 && arg[1].equalsIgnoreCase("list")) {
 
-                List<Reward> rewards = RewardManager.getAllRewards();
+                List<Reward> rewards = rewardManager.getAllRewards();
 
                 if(rewards.size() > 0){
 

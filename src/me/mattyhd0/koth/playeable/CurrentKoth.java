@@ -1,5 +1,6 @@
 package me.mattyhd0.koth.playeable;
 
+import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.scoreboard.ScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.creator.Koth;
@@ -8,6 +9,7 @@ import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Score;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +55,12 @@ public class CurrentKoth {
 
     public static void setCurrectKoth(CurrentKoth koth) {
 
-        if(KothManager.getKoth(koth.getId()) != null){
+        KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+
+        if(kothManager.getKothByID(koth.getId()) != null){
 
             currectKoth = koth;
+            ScoreboardHook.getHook().update(koth);
             Location kothLocation = koth.getKoth().getCenterLocation();
 
             Bukkit.broadcastMessage(
@@ -72,12 +77,13 @@ public class CurrentKoth {
     }
 
     public static void stopCurrentKoth(){
+        ScoreboardHook.getHook().update(currectKoth);
         ScoreboardHook.getHook().onKothEnd(currectKoth);
         currectKoth = null;
     }
 
     public Koth getKoth(){
-        return KothManager.getKoth(getId());
+        return KoTHPlugin.getInstance().getKothManager().getKothByID(getId());
     }
 
     public int getDefaultDuration() {
