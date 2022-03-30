@@ -1,7 +1,7 @@
 package me.mattyhd0.koth.playeable;
 
 import me.mattyhd0.koth.KoTHPlugin;
-import me.mattyhd0.koth.scoreboard.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.manager.koth.KothManager;
@@ -9,7 +9,6 @@ import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Score;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,19 +33,12 @@ public class CurrentKoth {
         this.broadcastTick = defaultBroadcastInterval;
         this.defaultDuration = time;
         this.timeLeft = defaultDuration;
-        ScoreboardHook.getHook().onKothStart(this);
+        KoTHPlugin.getInstance().getScoreboardHook().onKothStart(this);
 
     }
 
     public CurrentKoth(String kothId){
-
-        this.id = kothId;
-        this.defaultBroadcastInterval = Config.getConfig().getInt("koth-in-progress.broadcast-every");
-        this.broadcastTick = defaultBroadcastInterval;
-        this.defaultDuration = Config.getConfig().getInt("koth-duration");
-        this.timeLeft = defaultDuration;
-        ScoreboardHook.getHook().onKothStart(this);
-
+        this(kothId, Config.getConfig().getInt("koth-duration"));
     }
 
     public static CurrentKoth getCurrectKoth() {
@@ -60,7 +52,7 @@ public class CurrentKoth {
         if(kothManager.getKothByID(koth.getId()) != null){
 
             currectKoth = koth;
-            ScoreboardHook.getHook().update(koth);
+            KoTHPlugin.getInstance().getScoreboardHook().update(koth);
             Location kothLocation = koth.getKoth().getCenterLocation();
 
             Bukkit.broadcastMessage(
@@ -77,8 +69,8 @@ public class CurrentKoth {
     }
 
     public static void stopCurrentKoth(){
-        ScoreboardHook.getHook().update(currectKoth);
-        ScoreboardHook.getHook().onKothEnd(currectKoth);
+        KoTHPlugin.getInstance().getScoreboardHook().update(currectKoth);
+        KoTHPlugin.getInstance().getScoreboardHook().onKothEnd(currectKoth);
         currectKoth = null;
     }
 

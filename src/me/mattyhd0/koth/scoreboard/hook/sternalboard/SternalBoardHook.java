@@ -5,7 +5,7 @@ import com.xism4.sternalboard.api.scoreboard.SternalBoard;
 import com.xism4.sternalboard.managers.ScoreboardManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.mattyhd0.koth.playeable.CurrentKoth;
-import me.mattyhd0.koth.scoreboard.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;

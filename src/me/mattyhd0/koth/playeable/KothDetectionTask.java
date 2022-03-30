@@ -1,7 +1,7 @@
 package me.mattyhd0.koth.playeable;
 
 import me.mattyhd0.koth.KoTHPlugin;
-import me.mattyhd0.koth.scoreboard.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.reward.api.Reward;
 import me.mattyhd0.koth.manager.reward.RewardManager;
@@ -13,12 +13,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class KothDetectionTask extends BukkitRunnable {
 
+    private ScoreboardHook scoreboardHook;
+    private RewardManager rewardManager;
+
+    public KothDetectionTask(){
+        scoreboardHook = KoTHPlugin.getInstance().getScoreboardHook();
+        rewardManager = KoTHPlugin.getInstance().getRewardManager();
+    }
 
     @Override
     public void run() {
 
         CurrentKoth currectKoth = CurrentKoth.getCurrectKoth();
-        RewardManager rewardManager = KoTHPlugin.getInstance().getRewardManager();
 
         if(currectKoth == null) return;
 
@@ -47,7 +53,7 @@ public class KothDetectionTask extends BukkitRunnable {
         }
 
         currectKoth.tick();
-        ScoreboardHook.getHook().update(currectKoth);
+        scoreboardHook.update(currectKoth);
 
         if (currectKoth.getBroadcastTick() <= 0) {
             currectKoth.resetBroadcastInterval();

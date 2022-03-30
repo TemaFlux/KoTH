@@ -10,8 +10,8 @@ import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
 import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.playeable.KothDetectionTask;
 import me.mattyhd0.koth.schedule.ScheduleTask;
-import me.mattyhd0.koth.scoreboard.ScoreboardHook;
-import me.mattyhd0.koth.scoreboard.hook.KoTHScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.plugin.KoTHScoreboardHook;
 import me.mattyhd0.koth.scoreboard.hook.scoreboard.r.ScoreboardRHook;
 import me.mattyhd0.koth.scoreboard.hook.sternalboard.SternalBoardHook;
 import me.mattyhd0.koth.scoreboard.koth.ScoreboardListener;
@@ -33,6 +33,7 @@ public class KoTHPlugin extends JavaPlugin {
     private ItemStack selectionWandItem;
     private KothManager kothManager;
     private RewardManager rewardManager;
+    private ScoreboardHook scoreboardHook;
     public static Map<String, Boolean> supportedPlugins = new HashMap<>();
 
     @Override
@@ -60,7 +61,7 @@ public class KoTHPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         CurrentKoth currentKoth = CurrentKoth.getCurrectKoth();
-        if(currentKoth != null) ScoreboardHook.getHook().onKothEnd(currentKoth);
+        if(currentKoth != null) scoreboardHook.onKothEnd(currentKoth);
     }
 
     public void setupListeners(){
@@ -74,7 +75,7 @@ public class KoTHPlugin extends JavaPlugin {
 
     public void setupScoreboardHook(){
 
-        ScoreboardHook scoreboardHook = new KoTHScoreboardHook();
+        scoreboardHook = new KoTHScoreboardHook();
 
         if(getServer().getPluginManager().getPlugin("Scoreboard-revision") != null){
             scoreboardHook = new ScoreboardRHook();
@@ -82,7 +83,6 @@ public class KoTHPlugin extends JavaPlugin {
             scoreboardHook = new SternalBoardHook();
         }
 
-        scoreboardHook.hook();
         Bukkit.getConsoleSender().sendMessage(
                 Util.color("&8[&cKoTH&8] &7Scoreboard Hook: &c"+scoreboardHook.getHookName())
         );
@@ -155,5 +155,13 @@ public class KoTHPlugin extends JavaPlugin {
 
     public RewardManager getRewardManager() {
         return rewardManager;
+    }
+
+    public ScoreboardHook getScoreboardHook() {
+        return scoreboardHook;
+    }
+
+    public void setScoreboardHook(ScoreboardHook scoreboardHook) {
+        this.scoreboardHook = scoreboardHook;
     }
 }

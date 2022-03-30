@@ -1,8 +1,8 @@
 package me.mattyhd0.koth.scoreboard.hook.scoreboard.r;
 
 import me.mattyhd0.koth.playeable.CurrentKoth;
-import me.mattyhd0.koth.scoreboard.ScoreboardHook;
-import me.mattyhd0.koth.scoreboard.hook.KoTHScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.plugin.KoTHScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import rien.bijl.Scoreboard.r.Board.Animations.Row;
 import rien.bijl.Scoreboard.r.Board.BoardPlayer;

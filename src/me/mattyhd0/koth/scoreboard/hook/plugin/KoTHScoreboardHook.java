@@ -1,10 +1,10 @@
-package me.mattyhd0.koth.scoreboard.hook;
+package me.mattyhd0.koth.scoreboard.hook.plugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.playeable.CurrentKoth;
-import me.mattyhd0.koth.scoreboard.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
 import me.mattyhd0.koth.scoreboard.koth.ScoreboardManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;

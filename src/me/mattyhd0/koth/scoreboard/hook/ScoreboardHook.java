@@ -1,10 +1,8 @@
-package me.mattyhd0.koth.scoreboard;
+package me.mattyhd0.koth.scoreboard.hook;
 
 import me.mattyhd0.koth.playeable.CurrentKoth;
 
 public abstract class ScoreboardHook {
-
-    public static ScoreboardHook scoreboardHook;
 
     public abstract String getHookName();
 
@@ -13,13 +11,5 @@ public abstract class ScoreboardHook {
     public abstract void onKothEnd(CurrentKoth currentKoth);
 
     public abstract void update(CurrentKoth currentKoth);
-
-    public void hook(){
-        scoreboardHook = this;
-    }
-
-    public static ScoreboardHook getHook(){
-        return scoreboardHook;
-    }
 
 }
