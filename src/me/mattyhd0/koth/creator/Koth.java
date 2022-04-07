@@ -1,15 +1,20 @@
 package me.mattyhd0.koth.creator;
 
+import me.mattyhd0.koth.KoTHPlugin;
+import me.mattyhd0.koth.manager.koth.KothManager;
+import me.mattyhd0.koth.playeable.CurrentKoth;
+import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class Koth {
 
-    private String displayName;
-    private String id;
-    private Location pos1;
-    private Location pos2;
-    private Location centerLocation;
+    private final String displayName;
+    private final String id;
+    private final Location pos1;
+    private final Location pos2;
+    private final Location centerLocation;
 
     public Koth(String id, String displayName, Location pos1, Location pos2){
 
@@ -39,5 +44,27 @@ public class Koth {
 
     public Location getCenterLocation() {
         return centerLocation;
+    }
+
+    public void start() {
+
+        KoTHPlugin plugin = KoTHPlugin.getInstance();
+        KothManager kothManager = plugin.getKothManager();
+
+        kothManager.setCurrectKoth(this);
+        CurrentKoth currentKoth = kothManager.getCurrectKoth();
+        currentKoth.getTask().runTaskTimerAsynchronously(KoTHPlugin.getInstance(), 0L, 5L);
+        plugin.getScoreboardHook().update(currentKoth);
+
+        Bukkit.broadcastMessage(
+                Config.getMessage("koth-started")
+                        .replaceAll("\\{name}", this.getDisplayName())
+                        .replaceAll("\\{world}", centerLocation.getWorld().getName())
+                        .replaceAll("\\{x}", (int) centerLocation.getX() + "")
+                        .replaceAll("\\{y}", (int) centerLocation.getY() + "")
+                        .replaceAll("\\{z}", (int) centerLocation.getZ() + "")
+                        .replaceAll("\\{time_left}", currentKoth.getFormattedTimeLeft())
+        );
+
     }
 }

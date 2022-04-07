@@ -1,109 +1,75 @@
 package me.mattyhd0.koth.playeable;
 
 import me.mattyhd0.koth.KoTHPlugin;
+import me.mattyhd0.koth.manager.reward.RewardManager;
+import me.mattyhd0.koth.misc.WinEffect;
+import me.mattyhd0.koth.reward.api.Reward;
+import me.mattyhd0.koth.schedule.MillisUtil;
 import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.creator.Koth;
-import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CurrentKoth {
+public class CurrentKoth extends Koth{
 
-    private static CurrentKoth currectKoth;
-
-
-    private String id;
-    private int defaultDuration;
-    private int timeLeft;
-    private int defaultBroadcastInterval;
-    private int broadcastTick;
+    private final int defaultBroadcastInterval;
+    private int lastBroadcast;
     private Player king;
     private List<Player> playersInZone;
 
-    public CurrentKoth(String kothId, int time){
+    private final long duration;
 
-        this.id = kothId;
+    private long startMillis;
+    private long endMillis;
+
+    private final Task task;
+
+
+    public CurrentKoth(Koth koth, long timeMillis){
+
+        super(koth.getId(), koth.getDisplayName(), koth.getPos1(), koth.getPos2());
+        this.startMillis = System.currentTimeMillis();
+        lastBroadcast = -1;
         this.defaultBroadcastInterval = Config.getConfig().getInt("koth-in-progress.broadcast-every");
-        this.broadcastTick = defaultBroadcastInterval;
-        this.defaultDuration = time;
-        this.timeLeft = defaultDuration;
+        this.startMillis = System.currentTimeMillis();
+        this.endMillis = System.currentTimeMillis() + timeMillis;
+        this.duration = timeMillis;
         KoTHPlugin.getInstance().getScoreboardHook().onKothStart(this);
 
-    }
-
-    public CurrentKoth(String kothId){
-        this(kothId, Config.getConfig().getInt("koth-duration"));
-    }
-
-    public static CurrentKoth getCurrectKoth() {
-        return currectKoth;
-    }
-
-    public static void setCurrectKoth(CurrentKoth koth) {
-
-        KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
-
-        if(kothManager.getKothByID(koth.getId()) != null){
-
-            currectKoth = koth;
-            KoTHPlugin.getInstance().getScoreboardHook().update(koth);
-            Location kothLocation = koth.getKoth().getCenterLocation();
-
-            Bukkit.broadcastMessage(
-                    Config.getMessage("koth-started")
-                            .replaceAll("\\{name}", currectKoth.getKoth().getDisplayName())
-                            .replaceAll("\\{world}", kothLocation.getWorld().getName())
-                            .replaceAll("\\{x}", (int)kothLocation.getX()+"")
-                            .replaceAll("\\{y}", (int)kothLocation.getY()+"")
-                            .replaceAll("\\{z}", (int)kothLocation.getZ()+"")
-                            .replaceAll("\\{time_left}", currectKoth.getFormattedTimeLeft())
-            );
-        }
+        task = new Task();
 
     }
 
-    public static void stopCurrentKoth(){
-        KoTHPlugin.getInstance().getScoreboardHook().update(currectKoth);
-        KoTHPlugin.getInstance().getScoreboardHook().onKothEnd(currectKoth);
-        currectKoth = null;
+    public CurrentKoth(Koth koth){
+        this(koth, Config.getConfig().getInt("koth-duration")*MillisUtil.SECOND);
     }
 
-    public Koth getKoth(){
-        return KoTHPlugin.getInstance().getKothManager().getKothByID(getId());
+    public void stop(){
+        KoTHPlugin plugin = KoTHPlugin.getInstance();
+        CurrentKoth currentKoth = plugin.getKothManager().getCurrectKoth();
+
+        //plugin.getScoreboardHook().update(currentKoth);
+        plugin.getScoreboardHook().onKothEnd(currentKoth);
+        plugin.getKothManager().setCurrectKoth(null);
     }
 
-    public int getDefaultDuration() {
-        return defaultDuration;
+    public long getTimeLeftMillis(){
+        return endMillis-System.currentTimeMillis();
     }
 
-    public int getTimeLeft(){
-        return timeLeft;
-    }
-
-    public void broadcastTick(){
-        broadcastTick--;
-    }
-
-    public int getDefaultBroadcastInterval() {
+    public int getBroadcastInterval() {
         return defaultBroadcastInterval;
     }
 
-    public int getBroadcastTick() {
-        return broadcastTick;
-    }
-
-    public void resetBroadcastInterval() {
-        broadcastTick = defaultBroadcastInterval;
-    }
-
-    public String getId() {
-        return id;
+    public long getStartMillis(){
+        return startMillis;
     }
 
     public List<Player> getPlayersInKoth(){
@@ -114,14 +80,17 @@ public class CurrentKoth {
         return king;
     }
 
-    public void tick(){
+    public Task getTask() {
+        return task;
+    }
+
+    public void update(){
 
         List<Player> players = new ArrayList<>();
-        Koth koth = getKoth();
 
         for(Player player: Bukkit.getOnlinePlayers()){
 
-            if(Util.locationIsInZone(player.getLocation(), koth.getPos1(), koth.getPos2())){
+            if(Util.locationIsInZone(player.getLocation(), this.getPos1(), this.getPos2())){
 
                 players.add(player);
 
@@ -133,24 +102,110 @@ public class CurrentKoth {
             king = null;
             if(players.size() > 0) king = players.get(0);
             playersInZone = players;
-            timeLeft = Config.getConfig().getBoolean("reset-time-on-king-change") ? defaultDuration : timeLeft-1;
+            if(Config.getConfig().getBoolean("reset-time-on-king-change")) {
+                endMillis = System.currentTimeMillis() + duration;
+            }
             return;
         }
 
         playersInZone = players;
 
-        timeLeft--;
-
     }
 
     public String getFormattedTimeLeft(){
 
-        int minutes = timeLeft/60;
-        int seconds = timeLeft%60;
+        long difference = endMillis-System.currentTimeMillis();
+
+        long seconds = difference / 1000 % 60;
+        long minutes = difference / (60 * 1000) % 60;
+        long hours = difference / (60 * 60 * 1000) % 24;
+        long days = difference / (24 * 60 * 60 * 1000);
 
         return Config.getMessage("time-left-format")
                 .replaceAll("\\{minutes}", minutes+"")
                 .replaceAll("\\{seconds}", seconds+"");
 
     }
+
+    public static class Task extends BukkitRunnable {
+
+        private final ScoreboardHook scoreboardHook;
+        private final RewardManager rewardManager;
+        private CurrentKoth currentKoth;
+
+        public Task(){
+            scoreboardHook = KoTHPlugin.getInstance().getScoreboardHook();
+            rewardManager = KoTHPlugin.getInstance().getRewardManager();
+            currentKoth = KoTHPlugin.getInstance().getKothManager().getCurrectKoth();
+        }
+
+        @Override
+        public void run() {
+
+            currentKoth = KoTHPlugin.getInstance().getKothManager().getCurrectKoth();
+
+            scoreboardHook.update(currentKoth);
+
+            if(currentKoth == null) {
+                cancel();
+                return;
+            }
+
+            currentKoth.update();
+
+            long calc = ((System.currentTimeMillis()-currentKoth.getStartMillis()) / MillisUtil.SECOND);
+            if (calc%currentKoth.getBroadcastInterval() == 0 && calc != currentKoth.lastBroadcast) {
+                broadcast();
+                currentKoth.lastBroadcast = (int) calc;
+            }
+
+            if (currentKoth.getTimeLeftMillis() <= 0) {
+                end();
+            }
+
+        }
+
+        private void end(){
+
+            Player winner = currentKoth.getKing();
+
+            String message = winner == null ? Config.getMessage("koth-finised.without-winner") : Config.getMessage("koth-finised.with-winner");
+
+            message = message.replaceAll("\\{name}", currentKoth.getDisplayName());
+
+            if (winner != null) {
+                message = message.replaceAll("\\{player}", winner.getName());
+                if (Config.getConfig().getBoolean("koth-finish.winner-fireworks")) WinEffect.apply(winner);
+
+                for (Reward reward : rewardManager.getAllRewards()) {
+                    reward.give(winner);
+                }
+            }
+
+            Bukkit.broadcastMessage(message);
+            currentKoth.stop();
+
+        }
+
+        private void broadcast(){
+
+            String message = currentKoth.getKing() == null ? Config.getMessage("koth-in-progress.without-king") : Config.getMessage("koth-in-progress.with-king");
+
+            Location kothLocation = currentKoth.getCenterLocation();
+
+            message = message.replaceAll("\\{name}", currentKoth.getDisplayName())
+                    .replaceAll("\\{world}", kothLocation.getWorld().getName())
+                    .replaceAll("\\{x}", (int) kothLocation.getX() + "")
+                    .replaceAll("\\{y}", (int) kothLocation.getY() + "")
+                    .replaceAll("\\{z}", (int) kothLocation.getZ() + "")
+                    .replaceAll("\\{time_left}", currentKoth.getFormattedTimeLeft());
+
+            if (currentKoth.getKing() != null) message = message.replaceAll("\\{player}", currentKoth.getKing().getName());
+
+            Bukkit.broadcastMessage(message);
+
+        }
+
+    }
+
 }

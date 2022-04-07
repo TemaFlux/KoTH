@@ -12,9 +12,9 @@ import java.util.Map;
 
 public class CommandReward implements Reward {
 
-    private String id;
-    private String command;
-    private double chances;
+    private final String id;
+    private final String command;
+    private final double chances;
 
 
     public CommandReward(String id, double chances, String command){

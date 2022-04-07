@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class KothSelection {
 
-    private static Map<Player, Location> pos1 = new HashMap<>();
-    private static Map<Player, Location> pos2 = new HashMap<>();
+    private static final Map<Player, Location> pos1 = new HashMap<>();
+    private static final Map<Player, Location> pos2 = new HashMap<>();
 
     public static void setPos1(Player player, Location location){
         pos1.put(player, location);

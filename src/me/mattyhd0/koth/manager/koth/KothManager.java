@@ -1,5 +1,7 @@
 package me.mattyhd0.koth.manager.koth;
 
+import me.mattyhd0.koth.KoTHPlugin;
+import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.builders.KothBuilder;
 import me.mattyhd0.koth.util.Util;
@@ -16,7 +18,8 @@ import java.util.Map;
 
 public class KothManager {
 
-    private Map<String, Koth> koths = new HashMap<>();
+    private final Map<String, Koth> koths = new HashMap<>();
+    private CurrentKoth currentKoth = null;
 
     public KothManager(){
         this(false);
@@ -100,6 +103,21 @@ public class KothManager {
         koths.remove(id);
 
         kothsFile.save();
+
+    }
+
+    public CurrentKoth getCurrectKoth() {
+        return currentKoth;
+    }
+
+    public void setCurrectKoth(Koth koth) {
+
+       if(koth != null) {
+           currentKoth = new CurrentKoth(koth);
+           return;
+       }
+
+       currentKoth = null;
 
     }
 

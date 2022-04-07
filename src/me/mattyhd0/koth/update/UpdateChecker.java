@@ -12,8 +12,8 @@ import java.net.URLConnection;
 
 public class UpdateChecker {
 
-    private String version;
-    private int spigotResourceId;
+    private final String version;
+    private final int spigotResourceId;
     private SpigotResource spigotResource;
     private String latestVersion;
 

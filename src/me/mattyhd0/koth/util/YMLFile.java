@@ -11,8 +11,8 @@ import java.io.IOException;
 
 public class YMLFile {
 
-    private String fileName;
-    private File file;
+    private final String fileName;
+    private final File file;
     private FileConfiguration fileConfiguration;
     
     public YMLFile(String fileName) {

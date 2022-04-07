@@ -274,13 +274,15 @@ public class KothCommand implements CommandExecutor {
 
                 String id = arg[1];
 
-                if(CurrentKoth.getCurrectKoth() == null) {
+                KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
 
-                    KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+                if(kothManager.getCurrectKoth() == null) {
 
-                    if (kothManager.getKothByID(id) != null) {
+                    Koth koth = kothManager.getKothByID(id);
 
-                        CurrentKoth.setCurrectKoth(new CurrentKoth(id, Config.getConfig().getInt("koth-duration")));
+                    if (koth != null) {
+
+                        koth.start();
                         sender.sendMessage(
                                 Config.getMessage("commands.koth.start.koth-started")
                                         .replaceAll("\\{name}", kothManager.getKothByID(id).getDisplayName())
@@ -362,16 +364,17 @@ public class KothCommand implements CommandExecutor {
 
         if(sender.hasPermission("koth.stop")) {
 
-            CurrentKoth currectKoth = CurrentKoth.getCurrectKoth();
-            if (currectKoth != null) {
+            KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
+            CurrentKoth koth = kothManager.getCurrectKoth();
 
-                Koth koth = currectKoth.getKoth();
+            if (koth != null) {
+
                 sender.sendMessage(
                         Config.getMessage("commands.koth.stop.koth-stopped")
                                 .replaceAll("\\{id}", koth.getId())
                                 .replaceAll("\\{name}", koth.getDisplayName())
                 );
-                CurrentKoth.stopCurrentKoth();
+                koth.stop();
 
             } else {
                 sender.sendMessage(

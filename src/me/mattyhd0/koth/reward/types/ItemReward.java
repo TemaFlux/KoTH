@@ -10,9 +10,9 @@ import java.util.Map;
 
 public class ItemReward implements Reward {
 
-    private String id;
-    private double chances;
-    private ItemStack itemStack;
+    private final String id;
+    private final double chances;
+    private final ItemStack itemStack;
 
     public ItemReward(String id, double chances, ItemStack itemStack){
 

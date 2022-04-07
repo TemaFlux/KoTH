@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ScoreboardRHook extends ScoreboardHook {
 
-    private KoTHScoreboardHook kothScoreboard = new KoTHScoreboardHook();
+    private final KoTHScoreboardHook kothScoreboard = new KoTHScoreboardHook();
     private ConfigBoard kothScoreboardRevision;
 
 

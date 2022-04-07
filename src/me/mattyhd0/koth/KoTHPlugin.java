@@ -8,8 +8,7 @@ import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.manager.reward.RewardManager;
 import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
 import me.mattyhd0.koth.playeable.CurrentKoth;
-import me.mattyhd0.koth.playeable.KothDetectionTask;
-import me.mattyhd0.koth.schedule.ScheduleTask;
+import me.mattyhd0.koth.schedule.ScheduleManager;
 import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
 import me.mattyhd0.koth.scoreboard.hook.plugin.KoTHScoreboardHook;
 import me.mattyhd0.koth.scoreboard.hook.scoreboard.r.ScoreboardRHook;
@@ -26,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class KoTHPlugin extends JavaPlugin {
 
@@ -33,8 +33,10 @@ public class KoTHPlugin extends JavaPlugin {
     private ItemStack selectionWandItem;
     private KothManager kothManager;
     private RewardManager rewardManager;
+    private ScheduleManager scheduleManager;
     private ScoreboardHook scoreboardHook;
-    public static Map<String, Boolean> supportedPlugins = new HashMap<>();
+    private final Map<String, Boolean> supportedPlugins = new HashMap<>();
+    private boolean loadedListeners = false;
 
     @Override
     public void onEnable() {
@@ -49,8 +51,8 @@ public class KoTHPlugin extends JavaPlugin {
         setupScoreboardHook();
         kothManager = new KothManager(true);
         rewardManager = new RewardManager();
-        new KothDetectionTask().runTaskTimer(this, 0L, 20L);
-        new ScheduleTask().runTaskTimer(this, 0L, 20L);
+        scheduleManager = new ScheduleManager();
+        new ScheduleManager.Task().runTaskTimer(this, 0L, 5);
         updateChecker(this, 97741);
 
         if(supportedPlugins.get("PlaceholderAPI")){
@@ -60,17 +62,19 @@ public class KoTHPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        CurrentKoth currentKoth = CurrentKoth.getCurrectKoth();
+        CurrentKoth currentKoth = kothManager.getCurrectKoth();
         if(currentKoth != null) scoreboardHook.onKothEnd(currentKoth);
     }
 
     public void setupListeners(){
+        if (loadedListeners) return;
         getServer().getPluginManager().registerEvents(new KothSelectionListener(), this);
         getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
+        loadedListeners = true;
     }
 
     public void setupCommands(){
-        getCommand("koth").setExecutor(new KothCommand());
+        Objects.requireNonNull(getCommand("koth")).setExecutor(new KothCommand());
     }
 
     public void setupScoreboardHook(){
@@ -100,7 +104,7 @@ public class KoTHPlugin extends JavaPlugin {
         return instance;
     }
 
-    public static void detectSupport(String plugin){
+    public void detectSupport(String plugin){
 
         boolean hasSupport = (Bukkit.getPluginManager().getPlugin(plugin) != null);
         supportedPlugins.put(plugin, hasSupport);
@@ -112,7 +116,7 @@ public class KoTHPlugin extends JavaPlugin {
 
     }
 
-    public static boolean hasSupport(String plugin){
+    public boolean hasSupport(String plugin){
         return (supportedPlugins.get(plugin) != null) ? supportedPlugins.get(plugin) : false;
     }
 
@@ -149,6 +153,18 @@ public class KoTHPlugin extends JavaPlugin {
         return selectionWandItem;
     }
 
+    public void setKothManager(KothManager kothManager) {
+        this.kothManager = kothManager;
+    }
+
+    public void setRewardManager(RewardManager rewardManager) {
+        this.rewardManager = rewardManager;
+    }
+
+    public void setScheduleManager(ScheduleManager scheduleManager) {
+        this.scheduleManager = scheduleManager;
+    }
+
     public KothManager getKothManager() {
         return kothManager;
     }
@@ -160,6 +176,8 @@ public class KoTHPlugin extends JavaPlugin {
     public ScoreboardHook getScoreboardHook() {
         return scoreboardHook;
     }
+
+    public ScheduleManager getScheduleManager() { return scheduleManager; }
 
     public void setScoreboardHook(ScoreboardHook scoreboardHook) {
         this.scoreboardHook = scoreboardHook;

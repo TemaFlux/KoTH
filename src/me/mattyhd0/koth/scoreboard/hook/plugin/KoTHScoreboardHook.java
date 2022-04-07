@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 public class KoTHScoreboardHook extends ScoreboardHook {
 
-    boolean papiSupport = KoTHPlugin.hasSupport("PlaceholderAPI");
+    boolean papiSupport = KoTHPlugin.getInstance().hasSupport("PlaceholderAPI");
 
     @Override
     public String getHookName() {
@@ -37,7 +37,9 @@ public class KoTHScoreboardHook extends ScoreboardHook {
     @Override
     public void update(CurrentKoth currentKoth) {
 
-        if (CurrentKoth.getCurrectKoth() != null) {
+        CurrentKoth koth = KoTHPlugin.getInstance().getKothManager().getCurrectKoth();
+
+        if (koth != null) {
 
             FileConfiguration config = Config.getConfig();
 
@@ -45,7 +47,6 @@ public class KoTHScoreboardHook extends ScoreboardHook {
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
 
-                    Koth koth = CurrentKoth.getCurrectKoth().getKoth();
                     Location kothLoc = koth.getCenterLocation();
 
                     ScoreboardManager manager = ScoreboardManager.getByPlayer(player);
@@ -65,10 +66,10 @@ public class KoTHScoreboardHook extends ScoreboardHook {
                                 .replaceAll("\\{y}", (int) kothLoc.getY() + "")
                                 .replaceAll("\\{z}", (int) kothLoc.getZ() + "")
                                 .replaceAll("\\{koth_name}", koth.getDisplayName())
-                                .replaceAll("\\{time_left}", CurrentKoth.getCurrectKoth().getFormattedTimeLeft())
+                                .replaceAll("\\{time_left}", koth.getFormattedTimeLeft())
                         ;
 
-                        Player king = CurrentKoth.getCurrectKoth().getKing();
+                        Player king = koth.getKing();
                         if (king != null) {
                             line = line.replaceAll("\\{king}", king.getName());
                         } else {
