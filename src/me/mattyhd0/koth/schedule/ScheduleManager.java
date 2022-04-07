@@ -87,6 +87,7 @@ public class ScheduleManager {
 
     public KothSchedule getNextKothSchedule(){
 
+        if(this.incomingKoths.size() == 0) return null;
         return incomingKoths.getFirst();
 
     }

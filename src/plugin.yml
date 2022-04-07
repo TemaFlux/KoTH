@@ -1,14 +1,9 @@
 main: me.mattyhd0.koth.KoTHPlugin
 name: KoTH
 api-version: 1.13
-version: 2.0
-# Sternalboard support
-# Fixed koth creation (offset coordinates)
-# Recoded Main class, CurrentKoth class, KothManager class, RewardManager class, ScoreboardManager class
-# Added better ScheduleManager
-# Added placeholders:
-# %koth_schedule_next_name%
-# %koth_schedule_next_time%
+version: 2.0.1
+ # Fixed ScheduleManager NoSuchElementException
+ # Fixed ScoreboardManager NullPointerException
 description: 'The free solution for servers with King of the Hill'
 author: MattyHD0
 softdepend: [ PlaceholderAPI ]
