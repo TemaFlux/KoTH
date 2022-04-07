@@ -11,3 +11,5 @@
 | %koth_current_z%         |        |
 | %koth_current_time_left% |        |
 | %koth_current_king%      |        |
+| %koth_schedule_next_name%|        |
+| %koth_schedule_next_time%|        |
