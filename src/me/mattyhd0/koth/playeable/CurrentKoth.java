@@ -39,7 +39,7 @@ public class CurrentKoth extends Koth{
         lastBroadcast = -1;
         this.defaultBroadcastInterval = Config.getConfig().getInt("koth-in-progress.broadcast-every");
         this.startMillis = System.currentTimeMillis();
-        this.endMillis = System.currentTimeMillis() + timeMillis;
+        this.endMillis = System.currentTimeMillis() + timeMillis + 999;
         this.duration = timeMillis;
         KoTHPlugin.getInstance().getScoreboardHook().onKothStart(this);
 
@@ -55,7 +55,6 @@ public class CurrentKoth extends Koth{
         KoTHPlugin plugin = KoTHPlugin.getInstance();
         CurrentKoth currentKoth = plugin.getKothManager().getCurrectKoth();
 
-        //plugin.getScoreboardHook().update(currentKoth);
         plugin.getScoreboardHook().onKothEnd(currentKoth);
         plugin.getKothManager().setCurrectKoth(null);
     }
@@ -144,12 +143,12 @@ public class CurrentKoth extends Koth{
 
             currentKoth = KoTHPlugin.getInstance().getKothManager().getCurrectKoth();
 
-            scoreboardHook.update(currentKoth);
-
             if(currentKoth == null) {
                 cancel();
                 return;
             }
+
+            scoreboardHook.update(currentKoth);
 
             currentKoth.update();
 

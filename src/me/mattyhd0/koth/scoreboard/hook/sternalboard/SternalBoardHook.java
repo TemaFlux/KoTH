@@ -1,24 +1,34 @@
 package me.mattyhd0.koth.scoreboard.hook.sternalboard;
 
+import com.xism4.sternalboard.SternalBoard;
 import com.xism4.sternalboard.Structure;
-import com.xism4.sternalboard.api.scoreboard.SternalBoard;
 import com.xism4.sternalboard.managers.ScoreboardManager;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.plugin.KoTHScoreboardHook;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 
 public class SternalBoardHook extends ScoreboardHook {
 
     private String title;
     private List<String> lines;
     private boolean papiSupport;
+
+    private KoTHScoreboardHook koTHScoreboardHook;
+
     private ScoreboardManager scoreboardManager;
+    private ConcurrentMap<UUID, SternalBoard> oldBoards;
+
+    public SternalBoardHook(){
+        koTHScoreboardHook = new KoTHScoreboardHook();
+    }
 
     @Override
     public String getHookName() {
@@ -32,40 +42,29 @@ public class SternalBoardHook extends ScoreboardHook {
         lines = Util.coloredList(Config.getConfig().getStringList("scoreboard.body"));
         papiSupport = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
 
-        scoreboardManager = Structure.getInstance().getScoreboardManager();
-        Structure.getInstance().scoreboardManager = new ScoreboardManager(null);
         ScoreboardManager manager = Structure.getInstance().getScoreboardManager();
 
         for(Player player: Bukkit.getServer().getOnlinePlayers()){
-            SternalBoard board = new SternalBoard(player);
-            board.updateTitle( papiSupport ? PlaceholderAPI.setPlaceholders(player, title) : title );
-            board.updateLines( papiSupport ? PlaceholderAPI.setPlaceholders(player, lines) : lines );
-            manager.getBoards().put(player.getUniqueId(), board);
+            manager.removeScoreboard(player);
         }
+        koTHScoreboardHook.onKothStart(currentKoth);
 
     }
 
     @Override
     public void onKothEnd(CurrentKoth currentKoth) {
 
-        Structure.getInstance().scoreboardManager = scoreboardManager;
-        ScoreboardManager sbManager = Structure.getInstance().getScoreboardManager();
-        for (Player player: Bukkit.getServer().getOnlinePlayers()){
-            sbManager.getBoards().put(player.getUniqueId(), new SternalBoard(player));
+        for(Player player: Bukkit.getServer().getOnlinePlayers()){
+            Structure.getInstance().getScoreboardManager().setScoreboard(player);
         }
-
+        koTHScoreboardHook.onKothEnd(currentKoth);
     }
 
     @Override
     public void update(CurrentKoth currentKoth) {
 
         ScoreboardManager manager = Structure.getInstance().getScoreboardManager();
-
-        for(Player player: Bukkit.getServer().getOnlinePlayers()){
-            SternalBoard board = manager.getBoards().get(player.getUniqueId());
-            board.updateTitle( papiSupport ? PlaceholderAPI.setPlaceholders(player, title) : title );
-            board.updateLines( papiSupport ? PlaceholderAPI.setPlaceholders(player, lines) : lines );
-        }
+        koTHScoreboardHook.update(currentKoth);
 
     }
 

@@ -10,13 +10,17 @@ import me.mattyhd0.koth.creator.Koth;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class KothManager {
+public class KothManager implements Listener {
 
     private final Map<String, Koth> koths = new HashMap<>();
     private CurrentKoth currentKoth = null;
@@ -56,7 +60,7 @@ public class KothManager {
         }
 
         if(!canLoadAll) Bukkit.getConsoleSender().sendMessage(
-                Util.color("&8[&cKoTH&8] &cCould not load all the koths because one or more worlds were not loaded, to load the koths use /koth reload.")
+                Util.color("&8[&cKoTH&8] &cCould not load all the koths because one or more worlds were not loaded, These will be loaded when the worlds load.")
         );
 
     }
@@ -69,6 +73,39 @@ public class KothManager {
 
     public Koth getKothByID(String id){
         return koths.get(id);
+    }
+
+    private void loadFromWorld(String worldName) {
+
+        YMLFile kothsFile = Config.getKothsFile();
+        FileConfiguration configuration = kothsFile.get();
+
+        for (String key : configuration.getKeys(false)) {
+
+            String name = configuration.getString(key + ".name");
+
+            Location pos1 = Util.getLocationFromConfig(kothsFile, key + ".pos1");
+            Location pos2 = Util.getLocationFromConfig(kothsFile, key + ".pos2");
+
+            if (pos1 != null && pos1.getWorld().getName().equals(worldName) && pos2 != null) {
+                KoTHPlugin.getInstance().getKothManager().koths.put(key, new Koth(key, name, pos1, pos2));
+            }
+
+        }
+
+    }
+
+    private void  unloadFromWorld(String worldName){
+
+        for (Map.Entry<String, Koth> entry: koths.entrySet()){
+
+            String id = entry.getKey();
+            Koth koth = entry.getValue();
+
+            if(koth.getCenterLocation().getWorld().getName().equals(worldName)) KoTHPlugin.getInstance().getKothManager().koths.remove(id);
+
+        }
+
     }
 
     public void create(KothBuilder builder){
@@ -119,6 +156,16 @@ public class KothManager {
 
        currentKoth = null;
 
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event){
+        loadFromWorld(event.getWorld().getName());
+    }
+
+    @EventHandler
+    public void onWorldUnload(WorldUnloadEvent event){
+        unloadFromWorld(event.getWorld().getName());
     }
 
 }

@@ -1,9 +1,8 @@
 main: me.mattyhd0.koth.KoTHPlugin
 name: KoTH
 api-version: 1.13
-version: 2.0.1
- # Fixed ScheduleManager NoSuchElementException
- # Fixed ScoreboardManager NullPointerException
+version: 2.0.3
+ # Fixed SternalBoardHook flick
 description: 'The free solution for servers with King of the Hill'
 author: MattyHD0
 softdepend: [ PlaceholderAPI ]

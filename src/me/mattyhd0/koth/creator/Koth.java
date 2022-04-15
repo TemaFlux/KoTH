@@ -53,7 +53,7 @@ public class Koth {
 
         kothManager.setCurrectKoth(this);
         CurrentKoth currentKoth = kothManager.getCurrectKoth();
-        currentKoth.getTask().runTaskTimerAsynchronously(KoTHPlugin.getInstance(), 0L, 5L);
+        currentKoth.getTask().runTaskTimer(KoTHPlugin.getInstance(), 0L, 5L);
         plugin.getScoreboardHook().update(currentKoth);
 
         Bukkit.broadcastMessage(

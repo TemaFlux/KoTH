@@ -43,7 +43,7 @@ public class WinEffect {
                 cycles++;
 
                 if(cycles >= 10){
-                    this.cancel();
+                    cancel();
                 }
             }
         }.runTaskTimer(KoTHPlugin.getInstance(), 0L, 10L);

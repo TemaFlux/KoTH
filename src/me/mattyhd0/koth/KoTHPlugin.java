@@ -70,6 +70,7 @@ public class KoTHPlugin extends JavaPlugin {
         if (loadedListeners) return;
         getServer().getPluginManager().registerEvents(new KothSelectionListener(), this);
         getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
+        getServer().getPluginManager().registerEvents(new KothManager(), this);
         loadedListeners = true;
     }
 
