@@ -43,45 +43,42 @@ public class KoTHScoreboardHook extends ScoreboardHook {
 
             FileConfiguration config = Config.getConfig();
 
-            if (config.getBoolean("scoreboard.enable")) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
 
-                for (Player player : Bukkit.getOnlinePlayers()) {
+                Location kothLoc = koth.getCenterLocation();
 
-                    Location kothLoc = koth.getCenterLocation();
+                ScoreboardManager manager = ScoreboardManager.getByPlayer(player);
+                if (manager == null) {
+                    manager = ScoreboardManager.createScore(player);
+                }
 
-                    ScoreboardManager manager = ScoreboardManager.getByPlayer(player);
-                    if (manager == null) {
-                        manager = ScoreboardManager.createScore(player);
+                String title = config.getString("scoreboard.title");
+                if (papiSupport) title = PlaceholderAPI.setPlaceholders(player, title);
+                manager.setTitle(title);
+                int index = 14;
+
+                for (String line : config.getStringList("scoreboard.body")) {
+
+                    line = line.replaceAll("\\{world}", kothLoc.getWorld().getName())
+                            .replaceAll("\\{x}", (int) kothLoc.getX() + "")
+                            .replaceAll("\\{y}", (int) kothLoc.getY() + "")
+                            .replaceAll("\\{z}", (int) kothLoc.getZ() + "")
+                            .replaceAll("\\{koth_name}", koth.getDisplayName())
+                            .replaceAll("\\{time_left}", koth.getFormattedTimeLeft())
+                    ;
+
+                    Player king = koth.getKing();
+                    if (king != null) {
+                        line = line.replaceAll("\\{king}", king.getName());
+                    } else {
+                        line = line.replaceAll("\\{king}", Util.color(Config.getConfig().getString("koth-in-progress.king-null-placeholder")));
                     }
 
-                    String title = config.getString("scoreboard.title");
-                    if (papiSupport) title = PlaceholderAPI.setPlaceholders(player, title);
-                    manager.setTitle(title);
-                    int index = 14;
+                    if (papiSupport) line = PlaceholderAPI.setPlaceholders(player, line);
 
-                    for (String line : config.getStringList("scoreboard.body")) {
+                    manager.setSlot(index, line);
+                    index--;
 
-                        line = line.replaceAll("\\{world}", kothLoc.getWorld().getName())
-                                .replaceAll("\\{x}", (int) kothLoc.getX() + "")
-                                .replaceAll("\\{y}", (int) kothLoc.getY() + "")
-                                .replaceAll("\\{z}", (int) kothLoc.getZ() + "")
-                                .replaceAll("\\{koth_name}", koth.getDisplayName())
-                                .replaceAll("\\{time_left}", koth.getFormattedTimeLeft())
-                        ;
-
-                        Player king = koth.getKing();
-                        if (king != null) {
-                            line = line.replaceAll("\\{king}", king.getName());
-                        } else {
-                            line = line.replaceAll("\\{king}", Util.color(Config.getConfig().getString("koth-in-progress.king-null-placeholder")));
-                        }
-
-                        if (papiSupport) line = PlaceholderAPI.setPlaceholders(player, line);
-
-                        manager.setSlot(index, line);
-                        index--;
-
-                    }
 
                 }
 
