@@ -10,6 +10,7 @@ import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
 import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.schedule.ScheduleManager;
 import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
+import me.mattyhd0.koth.scoreboard.hook.plugin.DisabledScoreboardHook;
 import me.mattyhd0.koth.scoreboard.hook.plugin.KoTHScoreboardHook;
 import me.mattyhd0.koth.scoreboard.hook.scoreboard.r.ScoreboardRHook;
 import me.mattyhd0.koth.scoreboard.hook.sternalboard.SternalBoardHook;
@@ -81,8 +82,9 @@ public class KoTHPlugin extends JavaPlugin {
     public void setupScoreboardHook(){
 
         scoreboardHook = new KoTHScoreboardHook();
-
-        if(getServer().getPluginManager().getPlugin("Scoreboard-revision") != null){
+        if(!Config.getConfig().getBoolean("scoreboard.enable")){
+            scoreboardHook = new DisabledScoreboardHook();
+        } else if(getServer().getPluginManager().getPlugin("Scoreboard-revision") != null){
             scoreboardHook = new ScoreboardRHook();
         } else if (getServer().getPluginManager().getPlugin("SternalBoard") != null){
             scoreboardHook = new SternalBoardHook();
