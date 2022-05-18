@@ -1,22 +1,23 @@
 package me.mattyhd0.koth.schedule;
 
+import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.creator.Koth;
 
 public class KothSchedule {
 
-    private final Koth koth;
+    private final String kothId;
     private final long start;
 
 
-    public KothSchedule(Koth koth, long millisStart){
+    public KothSchedule(String kothId, long millisStart){
 
-        this.koth = koth;
+        this.kothId = kothId;
         this.start = millisStart;
 
     }
 
     public Koth getKoth() {
-        return koth;
+        return KoTHPlugin.getInstance().getKothManager().getKothByID(kothId);
     }
 
     public long getStartMillis() {

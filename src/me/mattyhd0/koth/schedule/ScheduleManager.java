@@ -4,7 +4,11 @@ import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.util.Config;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.*;
@@ -25,7 +29,6 @@ public class ScheduleManager {
         String timeZone = scheduleConfig.getString("options.timezone");
 
         incomingKoths = new LinkedList<>();
-        KothManager kothManager = KoTHPlugin.getInstance().getKothManager();
 
         LocalDate localDate = LocalDate.now();
         LocalDateTime localDateTime = LocalDateTime.of(localDate.getYear(), localDate.getMonth(), localDate.getDayOfMonth(), 0, 0);
@@ -54,29 +57,13 @@ public class ScheduleManager {
 
                 long millis = currentMillis+(MillisUtil.DAY*i);
 
-                Koth koth = kothManager.getKothByID(data[1]);
+                KothSchedule kothSchedule = new KothSchedule(
+                        data[1],
+                        millis + startHourMillis + startMinuteMillis
+                );
 
-                if(koth != null) {
-
-                    KothSchedule kothSchedule = new KothSchedule(
-                            koth,
-                            millis + startHourMillis + startMinuteMillis
-                    );
-
-
-                    if (kothSchedule.getStartMillis() > System.currentTimeMillis()) {
-                        incomingKoths.add(kothSchedule);
-                    }
-                    // Debug
-                    /*System.out.println(
-                            MessageFormat.format("{0} [{1}] {2}: {3}",
-                                    dayString,
-                                    kothSchedule.getStartMillis(),
-                                    kothSchedule.getKoth().getDisplayName(),
-                                    kothSchedule.getFormattedTime()
-                            )
-                    );*/
-
+                if (kothSchedule.getStartMillis() > System.currentTimeMillis()) {
+                    incomingKoths.add(kothSchedule);
                 }
 
             }
@@ -94,18 +81,6 @@ public class ScheduleManager {
 
     public List<KothSchedule> getIncomingKoths() {
         return incomingKoths;
-    }
-
-    public static void main(String[] args){
-
-        LocalDate localDate = LocalDate.now();
-
-        LocalDateTime localDateTime = LocalDateTime.of(localDate.getYear(), localDate.getMonth(), localDate.getDayOfMonth(), 0, 0);
-
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
-
-        System.out.println(zonedDateTime.toInstant().toEpochMilli());
-
     }
 
     public static class Task extends BukkitRunnable {

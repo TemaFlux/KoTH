@@ -1,8 +1,8 @@
 main: me.mattyhd0.koth.KoTHPlugin
 name: KoTH
 api-version: 1.13
-version: 2.0.3
- # Fixed SternalBoardHook flick
+version: 2.0.4
+ # Fixed ScheduleSystem dont work correctly
 description: 'The free solution for servers with King of the Hill'
 author: MattyHD0
 softdepend: [ PlaceholderAPI ]
