@@ -13,6 +13,7 @@ koth-in-progress:
   #What will return the placeholder {king} of the scoreboard when no one is dominating the hill
   king-null-placeholder: 'None'
 
+# Modify the format of the placeholder %koth_schedule_next_time%
 next-koth-time-format:
   days: ' days '
   day: ' day '
