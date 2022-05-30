@@ -1,10 +1,8 @@
 package me.mattyhd0.koth.placeholderapi;
 
-import com.sun.istack.internal.NotNull;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.playeable.CurrentKoth;
-import me.mattyhd0.koth.schedule.KothSchedule;
 import me.mattyhd0.koth.schedule.ScheduleManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
@@ -53,7 +51,7 @@ public class KoTHPlaceholder extends PlaceholderExpansion {
             case "schedule_next_name":
                 return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getKoth().getDisplayName();
             case "schedule_next_time":
-                return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getFormattedTime();
+                return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getFormattedTimeLeft();
             default:
                 return "";
 

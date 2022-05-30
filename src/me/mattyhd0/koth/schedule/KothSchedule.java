@@ -2,6 +2,8 @@ package me.mattyhd0.koth.schedule;
 
 import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.creator.Koth;
+import me.mattyhd0.koth.util.Config;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class KothSchedule {
 
@@ -24,7 +26,7 @@ public class KothSchedule {
         return start;
     }
 
-    public String getFormattedTime(){
+    public String getFormattedTimeLeft(){
 
         long difference = getStartMillis()-System.currentTimeMillis();
 
@@ -35,10 +37,12 @@ public class KothSchedule {
 
         StringBuilder builder = new StringBuilder();
 
-        if(days > 0) builder.append(days).append(days == 1 ? " day " : " days ");
-        if(hours > 0) builder.append(hours).append(hours == 1 ? " hour " : " hours ");
-        if(minutes > 0) builder.append(minutes).append(minutes == 1 ? " minute " : " minutes ");
-        if(seconds > 0) builder.append(seconds).append(seconds == 1 ? " second" : " seconds");
+        FileConfiguration config = Config.getConfig();
+
+        if(days > 0) builder.append(days).append(days == 1 ? config.getString("next-koth-time-format.day") : config.getString("next-koth-time-format.days"));
+        if(hours > 0) builder.append(hours).append(hours == 1 ? config.getString("next-koth-time-format.hour") : config.getString("next-koth-time-format.hours"));
+        if(minutes > 0) builder.append(minutes).append(minutes == 1 ? config.getString("next-koth-time-format.minute") : config.getString("next-koth-time-format.minutes"));
+        if(seconds > 0) builder.append(seconds).append(seconds == 1 ? config.getString("next-koth-time-format.second") : config.getString("next-koth-time-format.seconds"));
 
         return builder.toString();
 
