@@ -4,6 +4,8 @@ import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.util.Config;
+import me.mattyhd0.koth.util.YMLFile;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
@@ -107,7 +109,9 @@ public class ScheduleManager {
 
             if(System.currentTimeMillis() > kothSchedule.getStartMillis() && kothManager.getCurrectKoth() == null){
 
-                kothSchedule.getKoth().start();
+                if(Bukkit.getOnlinePlayers().size() >= Config.getScheduleFile().get().getInt("options.minimum-players")){
+                    kothSchedule.getKoth().start();
+                }
                 scheduleManager.incomingKoths.removeFirst();
 
             }

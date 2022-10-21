@@ -1,8 +1,8 @@
 main: me.mattyhd0.koth.KoTHPlugin
 name: KoTH
 api-version: 1.13
-version: 2.0.5
- # Fixed Scoreboard not being disabled with scoreboard.enable option
+version: 2.0.7
+# Fixed ScheduleManager
 
 description: 'The free solution for servers with King of the Hill'
 author: MattyHD0
