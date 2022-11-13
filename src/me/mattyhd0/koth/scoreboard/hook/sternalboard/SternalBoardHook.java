@@ -8,8 +8,6 @@ import me.mattyhd0.koth.scoreboard.hook.plugin.KoTHScoreboardHook;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 public class SternalBoardHook extends ScoreboardHook {
 
     /*private String title;

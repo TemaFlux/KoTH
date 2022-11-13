@@ -1,8 +1,8 @@
 main: me.mattyhd0.koth.KoTHPlugin
 name: KoTH
 api-version: 1.13
-version: 2.0.7
-# Fixed ScheduleManager
+version: 2.0.8
+# Fixed: You can capture the koth while in the respawn menu.
 
 description: 'The free solution for servers with King of the Hill'
 author: MattyHD0

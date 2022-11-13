@@ -89,7 +89,7 @@ public class CurrentKoth extends Koth{
 
         for(Player player: Bukkit.getOnlinePlayers()){
 
-            if(Util.locationIsInZone(player.getLocation(), this.getPos1(), this.getPos2())){
+            if(Util.locationIsInZone(player.getLocation(), this.getPos1(), this.getPos2()) && !player.isDead()){
 
                 players.add(player);
 
