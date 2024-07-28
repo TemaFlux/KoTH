@@ -2,7 +2,6 @@ package me.mattyhd0.koth.scoreboard.hook.plugin;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.mattyhd0.koth.KoTHPlugin;
-import me.mattyhd0.koth.creator.Koth;
 import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.scoreboard.hook.ScoreboardHook;
 import me.mattyhd0.koth.scoreboard.koth.ScoreboardManager;
@@ -15,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public class KoTHScoreboardHook extends ScoreboardHook {
 
-    boolean papiSupport = KoTHPlugin.getInstance().hasSupport("PlaceholderAPI");
+    boolean papiSupport = KoTHPlugin.getInstance().isSupport("PlaceholderAPI");
 
     @Override
     public String getHookName() {
