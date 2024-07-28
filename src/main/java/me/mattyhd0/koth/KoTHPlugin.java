@@ -47,25 +47,27 @@ extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
-        getLogger().info(Util.color("&8[&cKoTH&8] &7Enabling KoTH &cv" + getDescription().getVersion()));
-
-        setupCommands();
-        setupListeners();
 
         Config.loadConfiguration();
         selectionWandItem = new KothSelectionWand();
+
+        mySQL = MySQL.builder()
+            .host(getConfig().getString("mysql.host", "127.0.0.1"))
+            .port(getConfig().getInt("mysql.port", 3306))
+            .database(getConfig().getString("mysql.database", ""))
+            .user(getConfig().getString("mysql.user", ""))
+            .password(getConfig().getString("mysql.password", "")).build();
+
+        kothApi = new KOTHApi(mySQL);
+        kothApi.createTable();
     }
 
     @Override
     public void onEnable() {
-        mySQL = MySQL.builder()
-            .connectionUrl(getConfig().getString("mysql.host", "127.0.0.1") + ":" + getConfig().getInt("mysql.port", 3306))
-            .database(this.getConfig().getString("mysql.database"))
-            .user(this.getConfig().getString("mysql.user"))
-            .password(this.getConfig().getString("mysql.password")).build();
+        setupListeners();
 
-        kothApi = new KOTHApi(mySQL);
-        kothApi.createTable();
+        getLogger().info(Util.color("&8[&cKoTH&8] &7Enabling KoTH &cv" + getDescription().getVersion()));
+        setupCommands();
 
         detectSupport("PlaceholderAPI");
         if (isSupport("CMI")) detectSupport("CMI");
