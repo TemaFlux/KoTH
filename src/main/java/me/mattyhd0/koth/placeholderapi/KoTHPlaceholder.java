@@ -2,9 +2,9 @@ package me.mattyhd0.koth.placeholderapi;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.ToString;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.mattyhd0.koth.KoTHPlugin;
+import me.mattyhd0.koth.api.KOTHCache;
 import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.schedule.ScheduleManager;
 import me.mattyhd0.koth.util.Config;
@@ -13,7 +13,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 @Getter
-@ToString
 public class KoTHPlaceholder
 extends PlaceholderExpansion {
     private final String identifier;
@@ -58,6 +57,10 @@ extends PlaceholderExpansion {
                 return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getKoth().getDisplayName();
             case "schedule_next_time":
                 return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getFormattedTimeLeft();
+            case "win": {
+                Integer value = KOTHCache.points.get(player.getUniqueId());
+                return value == null ? "" : value.toString();
+            }
             default:
                 return "";
         }
