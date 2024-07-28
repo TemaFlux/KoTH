@@ -1,5 +1,8 @@
 package me.mattyhd0.koth.placeholderapi;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.playeable.CurrentKoth;
@@ -7,33 +10,36 @@ import me.mattyhd0.koth.schedule.ScheduleManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.PluginDescriptionFile;
 
-public class KoTHPlaceholder extends PlaceholderExpansion {
+@Getter
+@ToString
+public class KoTHPlaceholder
+extends PlaceholderExpansion {
+    private final String identifier;
+    private final String author;
+    private final String version;
 
-    @Override
-    public String getIdentifier() {
-        return "koth";
+    public KoTHPlaceholder(@NonNull KoTHPlugin plugin) {
+        PluginDescriptionFile description = plugin.getDescription();
+
+        identifier = description.getName().toLowerCase();
+        author = description.getAuthors() == null || description.getAuthors().isEmpty() ? "unknown" : String.join(", ", description.getAuthors());
+        version = description.getVersion();
     }
 
     @Override
-    public String getAuthor() {
-        return "MattyHD0";
-    }
-
-    @Override
-    public String getVersion() {
-        return "1.0";
+    public boolean persist() {
+        return true;
     }
 
     @Override
     public String onRequest(OfflinePlayer player, String params) {
-
         KoTHPlugin plugin = KoTHPlugin.getInstance();
         CurrentKoth currentKoth = plugin.getKothManager().getCurrectKoth();
         ScheduleManager scheduleManager = plugin.getScheduleManager();
 
-        switch (params){
-
+        switch (params) {
             case "current_name":
                 return currentKoth == null ? "" : currentKoth.getDisplayName();
             case "current_world":
@@ -54,8 +60,6 @@ public class KoTHPlaceholder extends PlaceholderExpansion {
                 return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getFormattedTimeLeft();
             default:
                 return "";
-
         }
-
     }
 }
