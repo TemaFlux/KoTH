@@ -1,12 +1,15 @@
 package me.mattyhd0.koth;
 
+import com.Zrips.CMI.CMI;
 import lombok.Getter;
 import lombok.Setter;
+import me.mattyhd0.koth.api.KOTHApi;
 import me.mattyhd0.koth.commands.KothCommand;
 import me.mattyhd0.koth.creator.selection.KothSelectionListener;
 import me.mattyhd0.koth.creator.selection.item.KothSelectionWand;
 import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.manager.reward.RewardManager;
+import me.mattyhd0.koth.mysql.MySQL;
 import me.mattyhd0.koth.placeholderapi.KoTHPlaceholder;
 import me.mattyhd0.koth.playeable.CurrentKoth;
 import me.mattyhd0.koth.schedule.ScheduleManager;
@@ -36,6 +39,9 @@ extends JavaPlugin {
     @Getter @Setter private ScoreboardHook scoreboardHook;
     private final Map<String, Boolean> supportedPlugins = new HashMap<>();
     private boolean loadedListeners = false;
+    @Getter private static CMI CMI;
+    @Getter private MySQL mySQL;
+    @Getter private KOTHApi kothApi;
     private KoTHPlaceholder placeholder;
 
     @Override
@@ -52,7 +58,19 @@ extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        mySQL = MySQL.builder()
+            .connectionUrl(getConfig().getString("mysql.host", "127.0.0.1") + ":" + getConfig().getInt("mysql.port", 3306))
+            .database(this.getConfig().getString("mysql.database"))
+            .user(this.getConfig().getString("mysql.user"))
+            .password(this.getConfig().getString("mysql.password")).build();
+
+        kothApi = new KOTHApi(mySQL);
+        kothApi.createTable();
+
         detectSupport("PlaceholderAPI");
+        if (isSupport("CMI")) detectSupport("CMI");
+
+        CMI = (CMI) Bukkit.getPluginManager().getPlugin("CMI");
         setupScoreboardHook();
 
         kothManager = new KothManager(true);
