@@ -1,4 +1,10 @@
-update-checker: true
+# mysql for tops
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  database: base
+  password: pass
 
 #The time in seconds it takes for a koth to finish once started
 koth-duration: 900
