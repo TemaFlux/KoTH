@@ -1,8 +1,8 @@
 package me.mattyhd0.koth.update;
 
 import com.google.gson.Gson;
-import com.sun.istack.internal.NotNull;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
