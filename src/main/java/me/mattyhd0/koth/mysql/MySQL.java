@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Builder
 public class MySQL {
-    @NonNull private final String connectionUrl;
+    @NonNull private final String host;
     @NonNull private final String database;
     @NonNull private final String user;
     @NonNull private final String password;
@@ -92,6 +92,6 @@ public class MySQL {
     }
 
     private Connection createConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://" + connectionUrl + ":" + port + "/" + database, user, password);
+        return DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
     }
 }
